@@ -1,0 +1,1694 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "simple restful api for e-commerce",
+    "description": "this restful api i created for practive purpose not for commercial purpose",
+    "version": "1.0.0",
+    "contact": {
+      "email": "m.al@students.polibatam.ac.id",
+      "name": "Muhammad Al Farizzi",
+      "url": "https://github.com/rizface"
+    },
+    "license": {
+      "name": "OMNeT++",
+      "url": "https://omnetpp/intro/license"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/api"
+    }
+  ],
+  "paths": {
+    "/seller/register": {
+      "description": "endpoint for register as seller",
+      "post": {
+        "tags": ["seller"],
+        "description": "post data for register as seller",
+        "requestBody": {
+          "description": "request MUST send to server for register as seller",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": true,
+                "properties": {
+                  "nama": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "email": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "password": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "alamat": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "deskripsi": {
+                    "type": "string",
+                    "required": true
+                  }
+                }
+              },
+              "examples": {
+                "valid-request": {
+                  "description": "valid request register as seller",
+                  "summary": "valid request",
+                  "value": {
+                    "nama": "toko sejahtera",
+                    "email": "sejahtera@gmail.com",
+                    "password": "sejahtera123",
+                    "alamat": "jl.sejahtera no.123",
+                    "deskripsi": "kami adalah toko yang dapat memberikan kesejahteraan"
+                  }
+                },
+                "invalid-request": {
+                  "description": "the point is if one of your request body is empty, then your request is invalid",
+                  "summary": "invalid request",
+                  "value": {
+                    "nama": "",
+                    "email": "sejahtera@gmail.com",
+                    "password": "sejahtera123",
+                    "alamat": "jl.sejahtera no.123",
+                    "deskripsi": "kami adalah toko yang dapat memberikan kesejahteraan"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+            "200": {
+              "description": "response if register as seller is success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "nama": {
+                            "type": "string"
+                          },
+                          "email": {
+                            "type": "string"
+                          },
+                          "alamat": {
+                            "type": "string"
+                          },
+                          "deskripsi": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "examples": {
+                    "success": {
+                      "value": {
+                        "code": 200,
+                        "status": "registrasi sebagai seller berhasil",
+                        "data": {
+                          "id": 1,
+                          "nama": "toko sejahtera",
+                          "email": "sejahtera@gmail.com",
+                          "alamat": "jl.sejahtera no.123",
+                          "deskripsi": "kami adalah toko yang dapat memberikan kesejahteraan"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "response if register as seller is failed because bad request from user",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/standard-failed-response"
+                  },
+                  "examples": {
+                    "bad-request-response": {
+                      "description": "you will get this response if one of your request is empty",
+                      "summary": "bad request error response",
+                      "value": {
+                        "code": 400,
+                        "status": "Nama Wajib Diisi",
+                        "data": null
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "422": {
+              "description": "response if register failed bacause the email has been user by other user",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/standard-failed-response"
+                  },
+                  "examples": {
+                    "duplicat-data-response": {
+                      "description": "you'll get this response if your email has been user by other user",
+                      "summary": "response if data exist in database",
+                      "value": {
+                        "code": 422,
+                        "status": "email sudah digunakan",
+                        "data": null
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "response if register as seller is failed bacause internal server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                      "$ref": "#/components/schemas/standard-failed-response"
+                  },
+                  "examples": {
+                      "value": {
+                        "$ref": "#/components/examples/internal-server-error-response"
+                      }
+                  }
+                }
+              }
+            }
+        }
+      }
+    },
+    "/seller/login": {
+        "post": {
+          "tags": ["seller"],
+          "description": "endpoint for login",
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "required": true,
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "valid": {
+                    "value": {
+                      "email": "sejahtera@gmail.com",
+                      "password": "sejahtera123"
+                    }
+                  },
+                  "invalid": {
+                    "value": {
+                      "email": "",
+                      "password": "sejahtera123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "response if the http request is success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "token": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "examples": {
+                    "login-success": {
+                      "value": {
+                        "code": 200,
+                        "status": "login success",
+                        "data": {
+                          "token": "token"
+                        }
+                      }
+                    },
+                    "login-failed":{
+                      "value": {
+                        "code": 200,
+                        "status": "login failed",
+                        "data": null
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "response if on of user request between email and password is empty",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/standard-failed-response"
+                  },
+                  "examples": {
+                    "bad-request-response": {
+                      "value": {
+                        "code": 400,
+                        "status": "email wajib diisi",
+                        "data": null
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "response if internal server error happen",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/standard-failed-response"
+                  },
+                  "examples": {
+                    "internal-server-error": {
+                      "value": {
+                        "code": 500,
+                        "status": "internal server error",
+                        "data": null
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+    },
+    "/seller/products": {
+      "get": {
+        "tags": ["seller"],
+        "security": [
+          {
+            "seller": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "this response will container code, status, and list of user products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items":{
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "nama_barang": {
+                              "type": "string"
+                            },
+                            "harga_barang": {
+                              "type": "integer"
+                            },
+                            "stok_barang": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                    }
+                  }
+                },
+                "examples": {
+                  "products": {
+                    "value": {
+                      "code": 200,
+                      "status": "sucess",
+                      "data": [
+                        {
+                          "id": 1,
+                          "nama_barang": "Salonpas",
+                          "harga_barang": 1000,
+                          "stok_barang": 1
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "response if you are not authenticated, but you are trying to access products data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/standard-failed-response"
+                },
+                "examples": {
+                  "unauthenticated-response": {
+                    "value": {
+                      "code": 403,
+                      "status": "unauthenticated",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "response if internal server error happen",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/standard-failed-response"
+                },
+                "examples": {
+                  "value": {
+                    "$ref": "#/components/examples/internal-server-error-response"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["seller"],
+        "security": [
+          {
+            "seller": []
+          }
+        ],
+        "description": "endpoint for post new products",
+        "requestBody": {
+          "required": true,
+          "description": "request body you MUST send to server for post new products",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama_barang": {
+                    "type": "string"
+                  },
+                  "harga_barang": {
+                    "type": "integer"
+                  },
+                  "stok_barang": {
+                    "type": "integer"
+                  },
+                  "deskripsi": {
+                    "type": "string"
+                  },
+                  "foto": {
+                    "type": "array",
+                    "items": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "foto": {
+                            "description": "image MUST in dataurl / base64 format",
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "examples": {
+                "valid": {
+                  "description": "valid request for post new product",
+                  "value": {
+                    "nama_barang": "Baju",
+                    "harga_barang": 20000,
+                    "stok_barang": 10,
+                    "deskripsi": "baju tidur",
+                    "foto": ["base64", "base64"]
+                  }
+                },
+                "invalid": {
+                  "description": "invalid request for post new product",
+                  "value": {
+                    "nama_barang": "",
+                    "harga_barang": 20000,
+                    "stok_barang": 10,
+                    "deskripsi": "baju tidur",
+                    "foto": ["base64", "base64"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "response if post new product is success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "nama_barang": {
+                          "type": "string"
+                        },
+                        "harga_barang": {
+                          "type": "integer"
+                        },
+                        "stok_barang": {
+                          "type": "integer"
+                        },
+                        "gambar": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "code": 200,
+                      "status": "new product is successfully posted",
+                      "data": {
+                        "id": 1,
+                        "nama_barang": "baju tidur",
+                        "harga_barang": 20000,
+                        "stok_barang": 10,
+                        "gambar": ["http://localhost:9091/images/images.jpg", "http://localhost:90901/images/images2.jpg"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "response if one of your request body id empty",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/standard-failed-response"
+                },
+                "examples": {
+                  "bad-request-response": {
+                    "value": {
+                      "code": 400,
+                      "status": "bad request",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "response if your not authenticated, but you try to post new product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/standard-failed-response"
+                },
+                "examples": {
+                  "unauthenticated-response": {
+                    "value": {
+                      "code": 403,
+                      "status": "unauthenticated",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "response if internal server error happen",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/standard-failed-response"
+                },
+                "examples": {
+                  "value": {
+                    "$ref": "#/components/examples/internal-server-error-response"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/seller/products/{idProducts}" : {
+      "delete": {
+        "tags": ["seller"],
+        "security": [
+          {
+            "seller": []
+          }
+        ],
+        "parameters": [
+          {
+            "required": true,
+            "name": "idProducts",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "response if product deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "product-deleted": {
+                    "value": {
+                      "code": 200,
+                      "status": "product deleted",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "response if product not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "not-found": {
+                    "value": {
+                      "code": 404,
+                      "status": "product not found",
+                      "data":"null"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "response if internal server error happen",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/standard-failed-response"
+                },
+                "examples": {
+                  "value": {
+                    "$ref": "#/components/examples/internal-server-error-response"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["seller"],
+        "description": "endpoint for get data by id",
+        "security": [
+          {
+            "seller": []
+          }
+        ],
+        "parameters": [
+            {
+              "required": true,
+              "name": "idProducts",
+              "in": "query",
+              "schema": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+        ],
+        "responses": {
+          "200": {
+            "description": "response if product found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "nama_barang": {
+                          "type": "string"
+                        },
+                        "harga_barang": {
+                          "type": "integer"
+                        },
+                        "stok_barang": {
+                          "type": "integer"
+                        },
+                        "deskripsi": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "product-found": {
+                    "value": {
+                      "code": 200,
+                      "status": "get product successfully",
+                      "data": {
+                        "id": 1,
+                        "nama_barang": "baju tidur",
+                        "harga_barang": 20000,
+                        "stok_barang": 10
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "response if request unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "code": 403,
+                      "status": "request unauthenticated",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "response if product not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "not-found": {
+                    "value": {
+                      "code": 404,
+                      "status": "product not found",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "response if internal server error happen",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/standard-failed-response"
+                },
+                "examples": {
+                  "internal-server-error": {
+                    "$ref": "#/components/examples/internal-server-error-response"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "seller": []
+          }
+        ],
+        "tags": ["seller"],
+        "description": "endpoint for update product data",
+        "parameters": [
+          {
+            "required": true,
+            "name": "idProducts",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+
+        "requestBody": {
+          "required": true,
+          "description": "request body you send to server",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama_barang": {
+                    "type": "string"
+                  },
+                  "harga_barang": {
+                    "minimum": 1000,
+                    "type": "integer"
+                  },
+                  "stok_barang": {
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "deskripsi": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {
+                "update": {
+                  "value": {
+                    "nama_barang": "baju mandi",
+                    "harga_barang": 30000,
+                    "stok_barang": 200,
+                    "deskripsi": "baju untuk mandi"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "response if update product success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "code": 200,
+                      "status": "product update success",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "response if request is unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "code": 403,
+                      "status": "unauthenticated request",
+                      "data": "null"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "response if product not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "not-found": {
+                    "value": {
+                      "code": 404,
+                      "status": "product not found",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "response if internal server error",
+            "content": {
+              "application/json":{
+                "schema": {
+                  "$ref": "#/components/schemas/standard-failed-response"
+                },
+                "examples": {
+                  "internal-server-error": {
+                    "$ref": "#/components/examples/internal-server-error-response"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/register": {
+      "description": "enpoint for customer register",
+      "post": {
+        "tags": ["customer-auth"],
+        "description": "requesst for register as customer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "no_hp": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {
+                "valid": {
+                  "value": {
+                    "nama": "Muhammad Al Farizzi",
+                    "email":"malfarizzi33@gmail.com",
+                    "no_hp": "082283295540",
+                    "password": "password"
+                  }
+                },
+                "invalid": {
+                  "value": {
+                    "nama": "",
+                    "email":"malfarizzi33@gmail.com",
+                    "no_hp": "082283295540",
+                    "password": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "respoinse if register as customer is success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "code": 200,
+                      "status": "success",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "response if user send bad request / invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "bad-request": {
+                    "value": {
+                      "code": 400,
+                      "status": "bad request",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "response if internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/standard-failed-response"
+                },
+                "examples": {
+                  "internal-server-error": {
+                    "$ref": "#/components/examples/internal-server-error-response"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "description": "endpoint for login",
+      "post": {
+        "tags": ["customer-auth"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+            "200": {
+              "description": "response if request to server success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "toke": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "examples": {
+                      "success": {
+                        "value": {
+                          "code": 200,
+                          "status": "login success",
+                          "data": {
+                            "token": "token"
+                          }
+                        }
+                      },
+                    "failed": {
+                      "value": {
+                        "code": 200,
+                        "status": "login failed",
+                        "data": {
+                          "token": "login failed"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+          }
+        }
+      }
+    },
+    "/products": {
+      "description": "get all products",
+      "get": {
+        "tags": ["customer"],
+        "responses": {
+          "200": {
+            "description": "this respoinse will return all products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "nama_barang": {
+                            "type": "string"
+                          },
+                          "harga_barang": {
+                            "type": "string"
+                          },
+                          "gambar": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                    "success": {
+                      "value": {
+                        "code":200,
+                        "status": "success",
+                        "data": [
+                          {
+                            "id": 1,
+                            "nama_barang": "baju tidur",
+                            "harga_barang": 20000,
+                            "gambar": "http://localhost:90901/images/image.jpg"
+                          }
+                        ]
+                      }
+                    }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "respose if internal server error happend",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/standard-failed-response"
+                },
+                "examples": {
+                  "internal-server-error": {
+                    "$ref": "#/components/examples/internal-server-error-response"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{idProduct}": {
+      "description": "endpoint to get detail of product",
+      "get": {
+        "tags": ["customer"],
+        "parameters": [
+          {
+            "required": true,
+            "name": "idProduct",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "response if request detail product is success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "nama_barang": {
+                          "type": "string"
+                        },
+                        "harga_barang": {
+                          "type": "integer"
+                        },
+                        "stok_barang": {
+                          "type": "integer"
+                        },
+                        "deskripsi": {
+                          "type": "string"
+                        },
+                        "gambar": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "code": 200,
+                      "status": "success",
+                      "data": {
+                        "id": 1,
+                        "nama_barang": "baju tidur",
+                        "harga_barang": 20000,
+                        "stok_barang": 100,
+                        "deskripsi": "baju tidur",
+                        "gambar": ["http://localhost:9091/images/image1.jpg","http://localhost:9091/images/image2.jpg"]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "response if internal server error happen",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/standard-failed-response"
+                },
+                "examples": {
+                  "internal-server-error": {
+                    "$ref": "#/components/examples/internal-server-error-response"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cart": {
+      "description": "enpoint to check and insert product in chart",
+      "get": {
+        "tags": ["chart"],
+        "security": [
+          {
+            "customer": []
+          }
+        ],
+        "description": "get product in customer chart",
+        "responses": {
+          "200": {
+            "description": "response if get product in chart is success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id_keranjang": {
+                            "type": "integer"
+                          },
+                          "nama_barang": {
+                            "type": "string"
+                          },
+                          "jumlah_barang": {
+                            "type": "integer"
+                          },
+                          "harga_barang": {
+                            "type": "integer"
+                          },
+                          "total": {
+                            "type": "integer"
+                          },
+                          "gambar": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "code": 200,
+                      "status": "success",
+                      "data": [
+                        {
+                          "id_keranjang": 1,
+                          "nama_barang": "baju renang",
+                          "jumlah_barang": 10,
+                          "harga_barang": 10000,
+                          "total": 100000,
+                          "gambar": "http://localhost:9091/images/image1.jpg"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "response if customer request is unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "code": 403,
+                      "status": "unauthenticated request",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "response if internal server error happen",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/standard-failed-response"
+                },
+                "examples": {
+                  "internal-server-error": {
+                    "$ref": "#/components/examples/internal-server-error-response"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "insert product to chart",
+        "tags": ["chart"],
+        "security": [
+          {
+            "customer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_barang": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "required": true
+                  },
+                  "jumlah_barang": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "required": true
+                  }
+                }
+              },
+              "examples": {
+                "request-to-cart": {
+                  "value": {
+                    "id_barang": 1,
+                    "jumlah_barang": 10
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+           "200": {
+             "description": "response if insert product to chart is success",
+             "content": {
+               "application/json": {
+                 "schema": {
+                   "type": "object",
+                   "properties": {
+                     "code": {
+                       "type": "integer"
+                     },
+                     "status": {
+                       "type": "string"
+                     },
+                     "data": {
+                       "type": "null"
+                     }
+                   }
+                 },
+                 "examples": {
+                    "success": {
+                      "value": {
+                        "code": 200,
+                        "status": "insert product to chart is success",
+                        "data": null
+
+                      }
+                    }
+                 }
+               }
+             }
+           },
+          "403": {
+            "description": "response request is unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "code": 403,
+                      "status": "request unauthenticated",
+                      "data": null
+
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "response if bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "code": 400,
+                      "status": "bad request",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "response if internal server error happen",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/standard-failed-response"
+                },
+                "examples": {
+                  "internal-server-error": {
+                    "$ref": "#/components/examples/internal-server-error-response"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "seller": {
+        "description": "security schema for seller",
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization"
+      },
+      "customer": {
+        "description": "security schema for seller",
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization"
+      }
+    },
+    "examples": {
+      "internal-server-error-response": {
+        "description": "you'll get this response if internal server error happen",
+        "summary": "internal server error",
+        "value": {
+          "code": 500,
+          "status": "internal server error",
+          "data": null
+        }
+      }
+    },
+    "schemas": {
+      "standard-failed-response": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "data": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  }
+}
