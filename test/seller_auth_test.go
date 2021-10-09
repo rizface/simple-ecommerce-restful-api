@@ -53,7 +53,8 @@ func TestSellerServiceRegister(t *testing.T) {
 	t.SkipNow()
 	t.Run("success", func(t *testing.T) {
 		sellerRepo := repository.NewSellerRepoImpl()
-		serviceImpl := service.NewSellerServiceImpl(app.Validator,db,sellerRepo)
+		sellerProductRepo := repository.NewSellerProductRepositoryImpl()
+		serviceImpl := service.NewSellerServiceImpl(app.Validator,db,sellerProductRepo,sellerRepo)
 		result := serviceImpl.Register(ctx,dataValid)
 		assert.Equal(t, true,result.Id > 0)
 	})
@@ -70,7 +71,8 @@ func TestSellerControllerRegister(t *testing.T)  {
 		recorder := httptest.NewRecorder()
 
 		sellerRepo := repository.NewSellerRepoImpl()
-		sellerService := service.NewSellerServiceImpl(app.Validator,db,sellerRepo)
+		sellerProductRepo := repository.NewSellerProductRepositoryImpl()
+		sellerService := service.NewSellerServiceImpl(app.Validator,db,sellerProductRepo,sellerRepo)
 		sellerController := controller.NewSellerControllerImpl(sellerService)
 		setup.SellerAuth()
 		sellerController.Register(recorder,request)
@@ -177,7 +179,7 @@ func TestSellerIntegrationLogin(t *testing.T) {
 
 	t.Run("account not exist", func(t *testing.T) {
 		payload := web.RequestSeller{
-			Email: "sejahtera2@gmail.com",
+			Email: "sejahasdtera2@gmail.com",
 			Password: "sejahtera1235",
 		}
 		jsonPayload,err := json.Marshal(payload)
@@ -189,5 +191,46 @@ func TestSellerIntegrationLogin(t *testing.T) {
 		sellerAuth.ServeHTTP(recorder,request)
 		response := recorder
 		assert.Equal(t, 404,response.Code)
+	})
+}
+
+func TestSellerVerifyToken(t *testing.T) {
+	t.Run("valid token", func(t *testing.T) {
+		token := "Bearer" + " eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwLCJuYW1hX3Rva28iOiJ0b2tvX3NlamFodGVyYTIiLCJlbWFpbCI6InNlamFodGVyYTJAZ21haWwuY29tIiwiZGVza3JpcHNpIjoidG9rbyBrYW1pIGtlcmVuIiwic2VsbGVyIjp0cnVlLCJjcmVhdGVkX2F0IjoiNiBPY3RvYmVyIDIwMjEiLCJpc3MiOiJNdWhhbW1hZCBBbCBGYXJpenppIiwiZXhwIjoxNjMzNzc0NjE4fQ.mt2ZAd_9WV-7t8-YSzI-r5KVdJzvB9yLs4sAaPSWtGk"
+		request := httptest.NewRequest(http.MethodGet,app.SELLER_PRODUCT,nil)
+		request.Header.Add("Authorization", token)
+		recorder := httptest.NewRecorder()
+		sellerAuth := setup.AuthenticatedSeller()
+		sellerAuth.ServeHTTP(recorder,request)
+		response := recorder
+		assert.Equal(t, http.StatusOK,response.Code)
+
+		//resBody,_ := io.ReadAll(response.Body)
+		//fmt.Println(string(resBody))
+
+	})
+
+	t.Run("invalid token", func(t *testing.T) {
+		//t.SkipNow()
+		token := "Bearer" + " token"
+		request := httptest.NewRequest(http.MethodGet,app.SELLER_PRODUCT,nil)
+		request.Header.Add("Authorization", token)
+		recorder := httptest.NewRecorder()
+		sellerAuth := setup.AuthenticatedSeller()
+		sellerAuth.ServeHTTP(recorder,request)
+		response := recorder
+		assert.Equal(t, http.StatusBadRequest,response.Code)
+	})
+
+	t.Run("empty token", func(t *testing.T) {
+		//t.SkipNow()
+		token := ""
+		request := httptest.NewRequest(http.MethodGet,app.SELLER_PRODUCT,nil)
+		request.Header.Add("Authorization", token)
+		recorder := httptest.NewRecorder()
+		sellerAuth := setup.AuthenticatedSeller()
+		sellerAuth.ServeHTTP(recorder,request)
+		response := recorder
+		assert.Equal(t, http.StatusBadRequest,response.Code)
 	})
 }
