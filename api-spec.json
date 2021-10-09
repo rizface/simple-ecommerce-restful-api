@@ -277,6 +277,37 @@
                 }
               }
             },
+            "404": {
+              "description": "response if seller not registered",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "required": true,
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "data": {
+                        "type": "null"
+                      }
+                    }
+                  },
+                  "examples": {
+                    "seller-not-registered": {
+                      "value": {
+                        "code": 404,
+                        "status": "akun tidak terdaftar",
+                        "data": null
+                      }
+                    }
+                  }
+                }
+              }
+            },,
             "400": {
               "description": "response if on of user request between email and password is empty",
               "content": {

@@ -8,7 +8,7 @@ import (
 )
 
 type SellerRepository interface {
-	Register(ctx context.Context, tx *sql.Tx, request web.RequestSellerRegister) int64
+	Register(ctx context.Context, tx *sql.Tx, request web.RequestSeller) int64
 	FindByEmail(ctx context.Context, tx *sql.Tx, email string) domain.Seller
 	FindByName(ctx context.Context, tx *sql.Tx, name string) domain.Seller
 }

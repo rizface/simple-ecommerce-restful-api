@@ -21,7 +21,7 @@ import (
 var ctx = context.Background()
 var db = app.Connection()
 
-var dataValid = web.RequestSellerRegister{
+var dataValid = web.RequestSeller{
 NamaToko:   "toko_sejahtera",
 Email:      "sejahtera@gmail.com",
 Password:   helper.Hash("sejahtera123"),
@@ -29,7 +29,7 @@ AlamatToko: "jakarta",
 Deskripsi:  "toko kami keren",
 }
 
-var dataInvalid = web.RequestSellerRegister{
+var dataInvalid = web.RequestSeller{
 	Email:      "sejahtera@gmail.com",
 	Password:   helper.Hash("sejahtera123"),
 	AlamatToko: "jakarta",
@@ -80,9 +80,9 @@ func TestSellerControllerRegister(t *testing.T)  {
 	} )
 }
 
-
 // Seller HTTP Test
-func TestIntegrtionSellerRegister(t *testing.T)  {
+func TestSellerIntegrtionRegister(t *testing.T)  {
+	//t.SkipNow()
 	t.Run("success", func(t *testing.T) {
 		dataJson,err := json.Marshal(dataValid)
 		helper.PanicIfError(err)
@@ -96,7 +96,7 @@ func TestIntegrtionSellerRegister(t *testing.T)  {
 		response := recorder
 		assert.Equal(t, 200,response.Code)
 	} )
-		
+
 	t.Run("bad request", func(t *testing.T) {
 		dataJson,err := json.Marshal(dataInvalid)
 		helper.PanicIfError(err)
@@ -125,7 +125,6 @@ func TestIntegrtionSellerRegister(t *testing.T)  {
 		assert.Equal(t, 422,response.Code)
 	} )
 
-
 	t.Run("duplicate seller" , func(t *testing.T) {
 		dataValid.Email = "otherseller@gmail.com"
 		dataJson,err := json.Marshal(dataValid)
@@ -139,5 +138,56 @@ func TestIntegrtionSellerRegister(t *testing.T)  {
 
 		response := recorder
 		assert.Equal(t, 422,response.Code)
-	} )
+	})
+}
+
+func TestSellerIntegrationLogin(t *testing.T) {
+
+	t.Run("login success", func(t *testing.T) {
+		payload := web.RequestSeller{
+			Email: "sejahtera@gmail.com",
+			Password: "sejahtera123",
+		}
+		jsonPayload,err := json.Marshal(payload)
+		helper.PanicIfError(err)
+		reader := strings.NewReader(string(jsonPayload))
+		request := httptest.NewRequest(http.MethodPost, app.SELLER_LOGIN, reader)
+		recorder := httptest.NewRecorder()
+		sellerAuth := setup.SellerAuth()
+		sellerAuth.ServeHTTP(recorder,request)
+		response := recorder
+		assert.Equal(t, 200,response.Code)
+	})
+
+	t.Run("login failed", func(t *testing.T) {
+		payload := web.RequestSeller{
+			Email: "sejahtera@gmail.com",
+			Password: "sejahtera1235",
+		}
+		jsonPayload,err := json.Marshal(payload)
+		helper.PanicIfError(err)
+		reader := strings.NewReader(string(jsonPayload))
+		request := httptest.NewRequest(http.MethodPost, app.SELLER_LOGIN, reader)
+		recorder := httptest.NewRecorder()
+		sellerAuth := setup.SellerAuth()
+		sellerAuth.ServeHTTP(recorder,request)
+		response := recorder
+		assert.Equal(t, 401,response.Code)
+	})
+
+	t.Run("account not exist", func(t *testing.T) {
+		payload := web.RequestSeller{
+			Email: "sejahtera2@gmail.com",
+			Password: "sejahtera1235",
+		}
+		jsonPayload,err := json.Marshal(payload)
+		helper.PanicIfError(err)
+		reader := strings.NewReader(string(jsonPayload))
+		request := httptest.NewRequest(http.MethodPost, app.SELLER_LOGIN, reader)
+		recorder := httptest.NewRecorder()
+		sellerAuth := setup.SellerAuth()
+		sellerAuth.ServeHTTP(recorder,request)
+		response := recorder
+		assert.Equal(t, 404,response.Code)
+	})
 }

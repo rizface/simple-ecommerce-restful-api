@@ -1,6 +1,6 @@
 package web
 
-type RequestSellerRegister struct {
+type RequestSeller struct {
 	NamaToko string `validate:"required" json:"nama_toko"`
 	Email string `validate:"required" json:"email"`
 	Password string `validate:"required" json:"password"`

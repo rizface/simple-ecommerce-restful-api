@@ -19,5 +19,7 @@ func SellerAuth() *mux.Router {
 	sellerController := controller.NewSellerControllerImpl(sellerService)
 
 	SellerAuth.HandleFunc(app.SELLER_REGITER,sellerController.Register).Methods(http.MethodPost)
+	SellerAuth.HandleFunc(app.SELLER_LOGIN, sellerController.Login).Methods(http.MethodPost)
+
 	return SellerAuth
 }

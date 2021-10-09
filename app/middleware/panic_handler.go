@@ -17,6 +17,12 @@ func PanicHandler(next http.Handler) http.Handler {
 				if duplicate,duplicateOK := err.(exception.Duplicate); duplicateOK {
 					helper.JsonWriter(writer,http.StatusUnprocessableEntity,duplicate.Error.(string),nil)
 				}
+				if notFound,notFoundOK := err.(exception.NotFound); notFoundOK {
+					helper.JsonWriter(writer,http.StatusNotFound,notFound.Error.(string),nil)
+				}
+				if unauth,unauthOK := err.(exception.Unauthorized); unauthOK {
+					helper.JsonWriter(writer,http.StatusUnauthorized,unauth.Error.(string),nil)
+				}
 			}
 		}()
 		next.ServeHTTP(writer,request)

@@ -21,7 +21,7 @@ func NewSellerServiceImpl(validate *validator.Validate, db *sql.DB, sellerRepo r
 	return &sellerServiceImpl{validate: validate,db:db, sellerRepo: sellerRepo}
 }
 
-func (s *sellerServiceImpl) Register(ctx context.Context, request web.RequestSellerRegister) domain.Seller {
+func (s *sellerServiceImpl) Register(ctx context.Context, request web.RequestSeller) domain.Seller {
 	err := s.validate.Struct(request)
 	exception.PanicBadRequest(err)
 
@@ -45,3 +45,18 @@ func (s *sellerServiceImpl) Register(ctx context.Context, request web.RequestSel
 	}
 	return seller
 }
+
+func (s *sellerServiceImpl) Login(ctx context.Context, request web.RequestSeller) string {
+	tx,err := s.db.Begin()
+	helper.PanicIfError(err)
+	defer helper.CommitOrRollback(tx)
+
+	existEmail := s.sellerRepo.FindByEmail(ctx,tx,request.Email)
+	exception.PanicNotFound(existEmail.Id)
+
+	err = helper.Compare(request.Password,existEmail.Password)
+	exception.PanicUnauthorized(err)
+	token := helper.GenerateTokenSeller(existEmail)
+	return token
+}
+
