@@ -9,4 +9,5 @@ import (
 type SellerProductService interface {
 	GetProducts(ctx context.Context, idSeller int) []domain.Products
 	PostProduct(ctx context.Context, idSeller int, request web.NewProduct) domain.Products
+	DeleteProduct(ctx context.Context, idProduct int) bool
 }

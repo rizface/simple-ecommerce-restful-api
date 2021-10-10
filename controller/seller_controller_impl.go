@@ -2,12 +2,14 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"net/http"
 	"simple-ecommerce-rest-api/app/exception"
 	"simple-ecommerce-rest-api/helper"
 	"simple-ecommerce-rest-api/model"
 	"simple-ecommerce-rest-api/model/web"
 	"simple-ecommerce-rest-api/service"
+	"strconv"
 )
 
 type sellerControllerImpl struct {
@@ -57,3 +59,12 @@ func (s sellerControllerImpl) PostProduct(w http.ResponseWriter, r *http.Request
 	idSeller := r.Context().Value("seller-data").(*helper.SellerCustom).Id
 	s.sellerProduct.PostProduct(r.Context(),idSeller,request)
 }
+
+func (s sellerControllerImpl) DeleteProduct(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	idProduct,err := strconv.Atoi(params["idProduct"])
+	exception.PanicIfInternalServerError(err)
+	s.sellerProduct.DeleteProduct(r.Context(),idProduct)
+	helper.JsonWriter(w,http.StatusOK,"product delete success", nil)
+}
+

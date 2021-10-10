@@ -126,3 +126,24 @@ func TestSellerProductPost(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest,response.Code)
 	})
 }
+
+func TestSellerProductDelete(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		token,_ := ioutil.ReadFile("token.txt")
+		request := httptest.NewRequest(http.MethodDelete,"http://localhost:8080/seller/products/22",nil)
+		request.Header.Add("Authorization", "Bearer " + string(token))
+		recorder := httptest.NewRecorder()
+		authSeller := setup.AuthenticatedSeller()
+		authSeller.ServeHTTP(recorder,request)
+		assert.Equal(t, 200,recorder.Code)
+	})
+	t.Run("not found", func(t *testing.T) {
+		token,_ := ioutil.ReadFile("token.txt")
+		request := httptest.NewRequest(http.MethodDelete,"http://localhost:8080/seller/products/100",nil)
+		request.Header.Add("Authorization", "Bearer " + string(token))
+		recorder := httptest.NewRecorder()
+		authSeller := setup.AuthenticatedSeller()
+		authSeller.ServeHTTP(recorder,request)
+		assert.Equal(t, 404,recorder.Code)
+	})
+}

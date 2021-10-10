@@ -55,3 +55,13 @@ func (s *sellerProductServiceImpl) PostProduct(ctx context.Context, idSeller int
 
 	return domain.Products{}
 }
+
+func (s *sellerProductServiceImpl) DeleteProduct(ctx context.Context, idProduct int) bool {
+	tx,err := s.db.Begin()
+	exception.PanicIfInternalServerError(err)
+	defer helper.CommitOrRollback(tx)
+	exist := s.sellerProduct.FindById(ctx,tx,idProduct)
+	exception.PanicNotFound(exist.Id)
+	result := s.sellerProduct.DeleteProduct(ctx,tx,exist.Id)
+	return result
+}

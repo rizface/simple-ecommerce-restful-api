@@ -7,4 +7,5 @@ type SellerController interface {
 	Login(w http.ResponseWriter, r *http.Request)
 	GetProducts(w http.ResponseWriter,r *http.Request)
 	PostProduct(w http.ResponseWriter, r *http.Request)
+	DeleteProduct(w http.ResponseWriter, r *http.Request)
 }

@@ -21,6 +21,7 @@ func (s sellerProductRepositoryImpl) GetProducts(ctx context.Context, tx *sql.Tx
 	sql := "SELECT id,id_seller,nama_barang,harga_barang,stok_barang,deskripsi,DATE_FORMAT(created_at, '%w %M %Y') FROM products WHERE id_seller = ?"
 	rows,err := tx.QueryContext(ctx,sql,idSeller)
 	exception.PanicIfInternalServerError(err)
+	defer rows.Close()
 	for rows.Next() {
 		each := domain.Products{}
 		err := rows.Scan(&each.Id,&each.IdSeller,&each.NamaBarang,&each.HargaBarang,&each.StokBarang,&each.Deskripsi,&each.CreatedAt)
@@ -50,4 +51,26 @@ func (s sellerProductRepositoryImpl) PostProductImages(ctx context.Context, tx *
 	sql := "INSERT INTO product_images(id_product,url) VALUES(?,?)"
 	_, err := tx.ExecContext(ctx,sql,idProduct,link)
 	exception.PanicIfInternalServerError(err)
+}
+
+func (s sellerProductRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, idProduct int) domain.Products {
+	var product domain.Products
+	sql := "SELECT id,id_seller,nama_barang,harga_barang,stok_barang,deskripsi,DATE_FORMAT(created_at, '%w %M %Y') FROM products WHERE id = ?"
+	rows,err := tx.QueryContext(ctx,sql,idProduct)
+	exception.PanicIfInternalServerError(err)
+	defer rows.Close()
+	if rows.Next() {
+		err := rows.Scan(&product.Id,&product.IdSeller,&product.NamaBarang,&product.HargaBarang,&product.StokBarang,&product.Deskripsi,&product.CreatedAt)
+		exception.PanicIfInternalServerError(err)
+	}
+	return product
+}
+
+func (s sellerProductRepositoryImpl) DeleteProduct(ctx context.Context, tx *sql.Tx, idProduct int) bool {
+	sql := "DELETE FROM products WHERE id = ?"
+	result,err := tx.ExecContext(ctx,sql,idProduct)
+	exception.PanicIfInternalServerError(err)
+	affected,err := result.RowsAffected()
+	exception.PanicIfInternalServerError(err)
+	return affected > 0
 }
