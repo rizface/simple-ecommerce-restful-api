@@ -9,11 +9,8 @@ import (
 	"net/http/httptest"
 	"simple-ecommerce-rest-api/app"
 	"simple-ecommerce-rest-api/app/setup"
-	"simple-ecommerce-rest-api/controller"
 	"simple-ecommerce-rest-api/helper"
 	"simple-ecommerce-rest-api/model/web"
-	"simple-ecommerce-rest-api/repository"
-	"simple-ecommerce-rest-api/service"
 	"strings"
 	"testing"
 )
@@ -36,53 +33,7 @@ var dataInvalid = web.RequestSeller{
 	Deskripsi:  "toko kami keren",
 }
 
-// Test SellerRepository For Register
-func TestSellerRepoRegister(t *testing.T) {
-	t.SkipNow()
-	tx,err := db.Begin()
-	helper.PanicIfError(err)
-	repoImpl := repository.NewSellerRepoImpl()
-	id := repoImpl.Register(ctx,tx,dataValid)
-	tx.Commit()
-	result := id > 0
-	assert.Equal(t, true,result)
-}
-
-// Test SellerService For Register
-func TestSellerServiceRegister(t *testing.T) {
-	t.SkipNow()
-	t.Run("success", func(t *testing.T) {
-		sellerRepo := repository.NewSellerRepoImpl()
-		sellerProductRepo := repository.NewSellerProductRepositoryImpl()
-		serviceImpl := service.NewSellerServiceImpl(app.Validator,db,sellerProductRepo,sellerRepo)
-		result := serviceImpl.Register(ctx,dataValid)
-		assert.Equal(t, true,result.Id > 0)
-	})
-}
-
-// Test SellerController For Register
-func TestSellerControllerRegister(t *testing.T)  {
-	t.SkipNow()
-	t.Run("success", func(t *testing.T) {
-		dataJson,err := json.Marshal(dataValid)
-		helper.PanicIfError(err)
-		reader := strings.NewReader(string(dataJson))
-		request := httptest.NewRequest(http.MethodPost, app.SELLER_REGITER,reader)
-		recorder := httptest.NewRecorder()
-
-		sellerRepo := repository.NewSellerRepoImpl()
-		sellerProductRepo := repository.NewSellerProductRepositoryImpl()
-		sellerService := service.NewSellerServiceImpl(app.Validator,db,sellerProductRepo,sellerRepo)
-		sellerController := controller.NewSellerControllerImpl(sellerService)
-		setup.SellerAuth()
-		sellerController.Register(recorder,request)
-		response := recorder
- 		helper.PanicIfError(err)
-		assert.Equal(t, 200,response.Code)
-	} )
-}
-
-// Seller HTTP Test
+// Test Seller Register
 func TestSellerIntegrtionRegister(t *testing.T)  {
 	//t.SkipNow()
 	t.Run("success", func(t *testing.T) {
@@ -143,6 +94,7 @@ func TestSellerIntegrtionRegister(t *testing.T)  {
 	})
 }
 
+// Test Seller Login
 func TestSellerIntegrationLogin(t *testing.T) {
 
 	t.Run("login success", func(t *testing.T) {
@@ -193,7 +145,8 @@ func TestSellerIntegrationLogin(t *testing.T) {
 		assert.Equal(t, 404,response.Code)
 	})
 }
-
+var test int
+// Test Verify Seller Token
 func TestSellerVerifyToken(t *testing.T) {
 	t.Run("valid token", func(t *testing.T) {
 		token := "Bearer" + " eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwLCJuYW1hX3Rva28iOiJ0b2tvX3NlamFodGVyYTIiLCJlbWFpbCI6InNlamFodGVyYTJAZ21haWwuY29tIiwiZGVza3JpcHNpIjoidG9rbyBrYW1pIGtlcmVuIiwic2VsbGVyIjp0cnVlLCJjcmVhdGVkX2F0IjoiNiBPY3RvYmVyIDIwMjEiLCJpc3MiOiJNdWhhbW1hZCBBbCBGYXJpenppIiwiZXhwIjoxNjMzNzc0NjE4fQ.mt2ZAd_9WV-7t8-YSzI-r5KVdJzvB9yLs4sAaPSWtGk"
@@ -234,3 +187,4 @@ func TestSellerVerifyToken(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest,response.Code)
 	})
 }
+

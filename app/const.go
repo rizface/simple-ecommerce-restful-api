@@ -7,6 +7,7 @@ import (
 var Mux *mux.Router = mux.NewRouter()
 
 const (
+	UPLOAD_IMAGES = "http://localhost:8081/api/save"
 	SELLER_REGITER = "/seller/register"
 	SELLER_LOGIN = "/seller/login"
 	SELLER_PRODUCT = "/seller/products"

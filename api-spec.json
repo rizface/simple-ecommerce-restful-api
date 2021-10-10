@@ -307,7 +307,7 @@
                   }
                 }
               }
-            },,
+            },
             "400": {
               "description": "response if on of user request between email and password is empty",
               "content": {
