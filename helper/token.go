@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"errors"
 	"github.com/golang-jwt/jwt/v4"
 	"simple-ecommerce-rest-api/model/domain"
 	"time"
@@ -8,11 +9,12 @@ import (
 
 var SellerSecret = []byte("seller-secret")
 type SellerCustom struct{
-	Id int `json:"id"`
-	NamaToko string `json:"nama_toko"`
-	Email string `json:"email"`
-	Deskripsi string `json:"deskripsi"`
-	CreatedAt string `json:"created_at"`
+	Id			int `json:"id"`
+	NamaToko 	string `json:"nama_toko"`
+	Email 		string `json:"email"`
+	Deskripsi	string `json:"deskripsi"`
+	Seller 		bool `json:"seller"`
+	CreatedAt 	string `json:"created_at"`
 	jwt.RegisteredClaims
 }
 
@@ -23,9 +25,10 @@ func GenerateTokenSeller(seller domain.Seller) string {
 		Email:            seller.Email,
 		Deskripsi:        seller.Deskripsi,
 		CreatedAt:        seller.CreatedAt,
+		Seller: true,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer: "Muhammad Al Farizzi",
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(10) * time.Minute)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(1) * time.Hour)),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,sellerClaims)
@@ -34,6 +37,21 @@ func GenerateTokenSeller(seller domain.Seller) string {
 	return sellerToken
 }
 
-//func VerifyToken() {
-//
-//}
+func VerifyToken(sellerToken string) (interface{},error) {
+	token,err := jwt.ParseWithClaims(sellerToken,&SellerCustom{}, func(token *jwt.Token) (interface{}, error) {
+		_,ok := token.Method.(*jwt.SigningMethodHMAC)
+		if ok {
+			return SellerSecret,nil
+		} else {
+			return nil, errors.New("Signing Methos Is Invalid")
+		}
+	})
+	if err != nil {
+		return nil,err
+	}
+	claims,claimsOK := token.Claims.(*SellerCustom)
+	if !claimsOK || token.Valid == false {
+		return  nil,errors.New("token is invalid")
+	}
+	return claims,nil
+}

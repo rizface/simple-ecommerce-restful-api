@@ -9,5 +9,6 @@ import (
 type SellerService interface {
 	Register(ctx context.Context, request web.RequestSeller) domain.Seller
 	Login(ctx context.Context, request web.RequestSeller) string
+
 }
 

@@ -18,7 +18,7 @@ type sellerServiceImpl struct {
 }
 
 func NewSellerServiceImpl(validate *validator.Validate, db *sql.DB, sellerRepo repository.SellerRepository) SellerService {
-	return &sellerServiceImpl{validate: validate,db:db, sellerRepo: sellerRepo}
+	return &sellerServiceImpl{validate: validate, db:db,sellerRepo: sellerRepo}
 }
 
 func (s *sellerServiceImpl) Register(ctx context.Context, request web.RequestSeller) domain.Seller {
@@ -59,4 +59,6 @@ func (s *sellerServiceImpl) Login(ctx context.Context, request web.RequestSeller
 	token := helper.GenerateTokenSeller(existEmail)
 	return token
 }
+
+
 

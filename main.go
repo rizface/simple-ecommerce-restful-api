@@ -9,6 +9,7 @@ import (
 
 func main() {
 	setup.SellerAuth()
+	setup.AuthenticatedSeller()
 	server := http.Server{
 		Addr: ":8080",
 		Handler: app.Mux,
