@@ -51,6 +51,13 @@ func (s sellerControllerImpl) GetProducts(w http.ResponseWriter, r *http.Request
 	})
 }
 
+func (s sellerControllerImpl) GetDetailProduct(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	idProduct,_ := strconv.Atoi(params["idProduct"])
+	product := s.sellerProduct.GetDetailProduct(r.Context(),idProduct)
+	helper.JsonWriter(w,http.StatusOK,"success",product)
+}
+
 func (s sellerControllerImpl) PostProduct(w http.ResponseWriter, r *http.Request) {
 	request := web.ProductRequest{}
 	decoder := json.NewDecoder(r.Body)

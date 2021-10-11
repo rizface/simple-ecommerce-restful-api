@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"simple-ecommerce-rest-api/app"
@@ -19,8 +20,8 @@ var ctx = context.Background()
 var db = app.Connection()
 
 var dataValid = web.RequestSeller{
-NamaToko:   "toko_sejahtera",
-Email:      "sejahtera@gmail.com",
+NamaToko:   "toko_sejahtera20",
+Email:      "sejahtera4@gmail.com",
 Password:   helper.Hash("sejahtera123"),
 AlamatToko: "jakarta",
 Deskripsi:  "toko kami keren",
@@ -99,7 +100,7 @@ func TestSellerIntegrationLogin(t *testing.T) {
 
 	t.Run("login success", func(t *testing.T) {
 		payload := web.RequestSeller{
-			Email: "sejahtera@gmail.com",
+			Email: "sejahtera4@gmail.com",
 			Password: "sejahtera123",
 		}
 		jsonPayload,err := json.Marshal(payload)
@@ -115,7 +116,7 @@ func TestSellerIntegrationLogin(t *testing.T) {
 
 	t.Run("login failed", func(t *testing.T) {
 		payload := web.RequestSeller{
-			Email: "sejahtera@gmail.com",
+			Email: "sejahtera4@gmail.com",
 			Password: "sejahtera1235",
 		}
 		jsonPayload,err := json.Marshal(payload)
@@ -149,9 +150,9 @@ var test int
 // Test Verify Seller Token
 func TestSellerVerifyToken(t *testing.T) {
 	t.Run("valid token", func(t *testing.T) {
-		token := "Bearer" + " eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcwLCJuYW1hX3Rva28iOiJ0b2tvX3NlamFodGVyYTIiLCJlbWFpbCI6InNlamFodGVyYTJAZ21haWwuY29tIiwiZGVza3JpcHNpIjoidG9rbyBrYW1pIGtlcmVuIiwic2VsbGVyIjp0cnVlLCJjcmVhdGVkX2F0IjoiNiBPY3RvYmVyIDIwMjEiLCJpc3MiOiJNdWhhbW1hZCBBbCBGYXJpenppIiwiZXhwIjoxNjMzNzc0NjE4fQ.mt2ZAd_9WV-7t8-YSzI-r5KVdJzvB9yLs4sAaPSWtGk"
+		token,_ := ioutil.ReadFile("token.txt")
 		request := httptest.NewRequest(http.MethodGet,app.SELLER_PRODUCT,nil)
-		request.Header.Add("Authorization", token)
+		request.Header.Add("Authorization", "Bearer " + string(token))
 		recorder := httptest.NewRecorder()
 		sellerAuth := setup.AuthenticatedSeller()
 		sellerAuth.ServeHTTP(recorder,request)

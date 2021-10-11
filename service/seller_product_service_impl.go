@@ -35,6 +35,15 @@ func (s *sellerProductServiceImpl) GetProducts(ctx context.Context, idSeller int
 	return products
 }
 
+func (s *sellerProductServiceImpl) GetDetailProduct(ctx context.Context, idProduct int) domain.Products {
+	tx,err := s.db.Begin()
+	exception.PanicIfInternalServerError(err)
+	defer helper.CommitOrRollback(tx)
+	product := s.sellerProduct.FindById(ctx,tx,idProduct)
+	exception.PanicNotFound(product.Id)
+	return product
+}
+
 func (s *sellerProductServiceImpl) PostProduct(ctx context.Context, idSeller int, request web.ProductRequest) domain.Products {
 	err := s.validate.Struct(request)
 	exception.PanicBadRequest(err)
