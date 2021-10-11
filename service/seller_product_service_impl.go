@@ -30,11 +30,12 @@ func (s *sellerProductServiceImpl) GetProducts(ctx context.Context, idSeller int
 	tx,err := s.db.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
+
 	products := s.sellerProduct.GetProducts(ctx,tx,idSeller)
 	return products
 }
 
-func (s *sellerProductServiceImpl) PostProduct(ctx context.Context, idSeller int, request web.NewProduct) domain.Products {
+func (s *sellerProductServiceImpl) PostProduct(ctx context.Context, idSeller int, request web.ProductRequest) domain.Products {
 	err := s.validate.Struct(request)
 	exception.PanicBadRequest(err)
 
@@ -59,9 +60,29 @@ func (s *sellerProductServiceImpl) PostProduct(ctx context.Context, idSeller int
 func (s *sellerProductServiceImpl) DeleteProduct(ctx context.Context, idProduct int) bool {
 	tx,err := s.db.Begin()
 	exception.PanicIfInternalServerError(err)
+
 	defer helper.CommitOrRollback(tx)
 	exist := s.sellerProduct.FindById(ctx,tx,idProduct)
 	exception.PanicNotFound(exist.Id)
+
 	result := s.sellerProduct.DeleteProduct(ctx,tx,exist.Id)
 	return result
+}
+
+func (s *sellerProductServiceImpl) UpdateProduct(ctx context.Context, idProduct int, idSeller int, request web.ProductRequest) string {
+	err := s.validate.Struct(request)
+	exception.PanicBadRequest(err)
+
+	tx,err := s.db.Begin()
+	exception.PanicIfInternalServerError(err)
+	defer helper.CommitOrRollback(tx)
+
+	exist := s.sellerProduct.FindById(ctx,tx,idProduct)
+	exception.PanicNotFound(exist.Id)
+
+	success := s.sellerProduct.UpdateProduct(ctx,tx,idProduct,idSeller,request)
+	if success {
+		return "Product Update Success"
+	}
+	return "Product Update Failed"
 }

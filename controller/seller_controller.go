@@ -8,4 +8,5 @@ type SellerController interface {
 	GetProducts(w http.ResponseWriter,r *http.Request)
 	PostProduct(w http.ResponseWriter, r *http.Request)
 	DeleteProduct(w http.ResponseWriter, r *http.Request)
+	UpdateProduct(w http.ResponseWriter, r *http.Request)
 }

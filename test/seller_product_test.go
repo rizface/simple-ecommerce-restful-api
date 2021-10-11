@@ -54,7 +54,7 @@ func TestSellerProductPost(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
 		token,_ := ioutil.ReadFile("token.txt")
 		img,_ := ioutil.ReadFile("img.txt")
-		product := web.NewProduct{
+		product := web.ProductRequest{
 			NamaBarang:  "baju tidur",
 			HargaBarang: 10000,
 			Stokbarang:  10,
@@ -80,7 +80,7 @@ func TestSellerProductPost(t *testing.T) {
 	t.Run("invalid empty nama_barang", func(t *testing.T) {
 		token,_ := ioutil.ReadFile("token.txt")
 		img,_ := ioutil.ReadFile("img.txt")
-		product := web.NewProduct{
+		product := web.ProductRequest{
 			NamaBarang:  "",
 			HargaBarang: 10000,
 			Stokbarang:  10,
@@ -106,7 +106,7 @@ func TestSellerProductPost(t *testing.T) {
 	t.Run("invalid empty gambar", func(t *testing.T) {
 		token,_ := ioutil.ReadFile("token.txt")
 		//img,_ := ioutil.ReadFile("img.txt")
-		product := web.NewProduct{
+		product := web.ProductRequest{
 			NamaBarang:  "sempak",
 			HargaBarang: 10000,
 			Stokbarang:  10,
@@ -145,5 +145,91 @@ func TestSellerProductDelete(t *testing.T) {
 		authSeller := setup.AuthenticatedSeller()
 		authSeller.ServeHTTP(recorder,request)
 		assert.Equal(t, 404,recorder.Code)
+	})
+}
+
+func TestSellerProductUpdate(t *testing.T) {
+	t.Run("valid", func(t *testing.T) {
+		updatedData := web.ProductRequest{
+			NamaBarang:  "baju tidur lagi lagi ",
+			HargaBarang: 10000,
+			Stokbarang:  10,
+			Deskripsi:   "baju ini bagus",
+		}
+		token,_ := ioutil.ReadFile("token.txt")
+		jsonUpdate,_ := json.Marshal(updatedData)
+		reader := strings.NewReader(string(jsonUpdate))
+		request := httptest.NewRequest(http.MethodPut, "http://localhost:8080/seller/products/21",reader)
+		request.Header.Add("Authorization", "Bearer " + string(token))
+		recorder := httptest.NewRecorder()
+		authSeller := setup.AuthenticatedSeller()
+		authSeller.ServeHTTP(recorder,request)
+		assert.Equal(t, http.StatusOK,recorder.Code)
+	})
+	t.Run("invalid", func(t *testing.T) {
+		updatedData := web.ProductRequest{
+			NamaBarang:  "",
+			HargaBarang: 10000,
+			Stokbarang:  10,
+			Deskripsi:   "baju ini bagus",
+		}
+		token,_ := ioutil.ReadFile("token.txt")
+		jsonUpdate,_ := json.Marshal(updatedData)
+		reader := strings.NewReader(string(jsonUpdate))
+		request := httptest.NewRequest(http.MethodPut, "http://localhost:8080/seller/products/21",reader)
+		request.Header.Add("Authorization", "Bearer " + string(token))
+		recorder := httptest.NewRecorder()
+		authSeller := setup.AuthenticatedSeller()
+		authSeller.ServeHTTP(recorder,request)
+		assert.Equal(t, http.StatusBadRequest,recorder.Code)
+	})
+	t.Run("not found", func(t *testing.T) {
+		updatedData := web.ProductRequest{
+			NamaBarang:  "baju tidur lagi lagi ",
+			HargaBarang: 10000,
+			Stokbarang:  10,
+			Deskripsi:   "baju ini bagus",
+		}
+		token,_ := ioutil.ReadFile("token.txt")
+		jsonUpdate,_ := json.Marshal(updatedData)
+		reader := strings.NewReader(string(jsonUpdate))
+		request := httptest.NewRequest(http.MethodPut, "http://localhost:8080/seller/products/212",reader)
+		request.Header.Add("Authorization", "Bearer " + string(token))
+		recorder := httptest.NewRecorder()
+		authSeller := setup.AuthenticatedSeller()
+		authSeller.ServeHTTP(recorder,request)
+		assert.Equal(t, http.StatusNotFound,recorder.Code)
+	})
+	t.Run("invalid token", func(t *testing.T) {
+		updatedData := web.ProductRequest{
+			NamaBarang:  "baju tidur lagi lagi ",
+			HargaBarang: 10000,
+			Stokbarang:  10,
+			Deskripsi:   "baju ini bagus",
+		}
+		jsonUpdate,_ := json.Marshal(updatedData)
+		reader := strings.NewReader(string(jsonUpdate))
+		request := httptest.NewRequest(http.MethodPut, "http://localhost:8080/seller/products/212",reader)
+		request.Header.Add("Authorization", "Bearer " + " token")
+		recorder := httptest.NewRecorder()
+		authSeller := setup.AuthenticatedSeller()
+		authSeller.ServeHTTP(recorder,request)
+		assert.Equal(t, http.StatusBadRequest,recorder.Code)
+	})
+	t.Run("empty token", func(t *testing.T) {
+		updatedData := web.ProductRequest{
+			NamaBarang:  "baju tidur lagi lagi ",
+			HargaBarang: 10000,
+			Stokbarang:  10,
+			Deskripsi:   "baju ini bagus",
+		}
+		jsonUpdate,_ := json.Marshal(updatedData)
+		reader := strings.NewReader(string(jsonUpdate))
+		request := httptest.NewRequest(http.MethodPut, "http://localhost:8080/seller/products/212",reader)
+		request.Header.Add("Authorization", "")
+		recorder := httptest.NewRecorder()
+		authSeller := setup.AuthenticatedSeller()
+		authSeller.ServeHTTP(recorder,request)
+		assert.Equal(t, http.StatusBadRequest,recorder.Code)
 	})
 }

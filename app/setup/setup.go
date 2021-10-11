@@ -40,6 +40,6 @@ func AuthenticatedSeller() *mux.Router {
 	AuthenticatedSeller.HandleFunc(app.SELLER_PRODUCT, sellerController.GetProducts).Methods(http.MethodGet)
 	AuthenticatedSeller.HandleFunc(app.SELLER_PRODUCT,sellerController.PostProduct).Methods(http.MethodPost)
 	AuthenticatedSeller.HandleFunc(app.SELLER_PROUDUCT_MANIPULATION,sellerController.DeleteProduct).Methods(http.MethodDelete)
-
+	AuthenticatedSeller.HandleFunc(app.SELLER_PROUDUCT_MANIPULATION,sellerController.UpdateProduct).Methods(http.MethodPut)
 	return AuthenticatedSeller
 }

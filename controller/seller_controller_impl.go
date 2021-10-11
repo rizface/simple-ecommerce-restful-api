@@ -52,7 +52,7 @@ func (s sellerControllerImpl) GetProducts(w http.ResponseWriter, r *http.Request
 }
 
 func (s sellerControllerImpl) PostProduct(w http.ResponseWriter, r *http.Request) {
-	request := web.NewProduct{}
+	request := web.ProductRequest{}
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&request)
 	exception.PanicIfInternalServerError(err)
@@ -67,4 +67,18 @@ func (s sellerControllerImpl) DeleteProduct(w http.ResponseWriter, r *http.Reque
 	s.sellerProduct.DeleteProduct(r.Context(),idProduct)
 	helper.JsonWriter(w,http.StatusOK,"product delete success", nil)
 }
+
+func (s sellerControllerImpl) UpdateProduct(w http.ResponseWriter, r *http.Request) {
+	request := web.ProductRequest{}
+	params := mux.Vars(r)
+	idProduct,err := strconv.Atoi(params["idProduct"])
+	exception.PanicBadRequest(err)
+	seller := r.Context().Value("seller-data").(*helper.SellerCustom)
+	decoder := json.NewDecoder(r.Body)
+	err = decoder.Decode(&request)
+	exception.PanicBadRequest(err)
+	result := s.sellerProduct.UpdateProduct(r.Context(),idProduct,seller.Id,request)
+	helper.JsonWriter(w,http.StatusOK,result,nil)
+}
+
 

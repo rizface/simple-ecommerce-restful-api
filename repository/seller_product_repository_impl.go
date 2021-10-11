@@ -31,7 +31,7 @@ func (s sellerProductRepositoryImpl) GetProducts(ctx context.Context, tx *sql.Tx
 	return products
 }
 
-func (s sellerProductRepositoryImpl) PostProduct(ctx context.Context, tx *sql.Tx, idSeller int, request web.NewProduct) domain.Products {
+func (s sellerProductRepositoryImpl) PostProduct(ctx context.Context, tx *sql.Tx, idSeller int, request web.ProductRequest) domain.Products {
 	sql := "INSERT INTO products(id_seller,nama_barang,harga_barang,stok_barang,deskripsi) VALUES(?,?,?,?,?)"
 	result,err := tx.ExecContext(ctx,sql, idSeller,request.NamaBarang,request.HargaBarang,request.Stokbarang,request.Deskripsi)
 	exception.PanicIfInternalServerError(err)
@@ -69,6 +69,15 @@ func (s sellerProductRepositoryImpl) FindById(ctx context.Context, tx *sql.Tx, i
 func (s sellerProductRepositoryImpl) DeleteProduct(ctx context.Context, tx *sql.Tx, idProduct int) bool {
 	sql := "DELETE FROM products WHERE id = ?"
 	result,err := tx.ExecContext(ctx,sql,idProduct)
+	exception.PanicIfInternalServerError(err)
+	affected,err := result.RowsAffected()
+	exception.PanicIfInternalServerError(err)
+	return affected > 0
+}
+
+func (s sellerProductRepositoryImpl) UpdateProduct(ctx context.Context, tx *sql.Tx, idProduct int, idSeller int, request web.ProductRequest) bool {
+	sql := "UPDATE products SET nama_barang = ?, harga_barang = ?, stok_barang = ?, deskripsi = ? WHERE id = ? AND id_seller = ?"
+	result,err := tx.ExecContext(ctx,sql, request.NamaBarang, request.HargaBarang,request.Stokbarang,request.Deskripsi, idProduct,idSeller)
 	exception.PanicIfInternalServerError(err)
 	affected,err := result.RowsAffected()
 	exception.PanicIfInternalServerError(err)
