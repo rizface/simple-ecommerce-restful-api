@@ -7,7 +7,12 @@ import (
 	"time"
 )
 
+// Seller Secret
 var SellerSecret = []byte("seller-secret")
+// Customer Secret
+var CustomerSecret = []byte("customer-secret")
+
+// Seller Custom Claims
 type SellerCustom struct{
 	Id			int `json:"id"`
 	NamaToko 	string `json:"nama_toko"`
@@ -17,7 +22,10 @@ type SellerCustom struct{
 	CreatedAt 	string `json:"created_at"`
 	jwt.RegisteredClaims
 }
+// Custoemr Customer Claims
+type CustomerCustom struct{}
 
+// Seller Token Generator
 func GenerateTokenSeller(seller domain.Seller) string {
 	sellerClaims := SellerCustom{
 		Id:               seller.Id,
@@ -55,3 +63,5 @@ func VerifyToken(sellerToken string) (interface{},error) {
 	}
 	return claims,nil
 }
+
+// Customer Token Validator

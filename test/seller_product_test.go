@@ -55,7 +55,7 @@ func TestSellerProductGet(t *testing.T) {
 func TestSellerProductGetDetailProduct(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		token,_ := ioutil.ReadFile("token.txt")
-		request := httptest.NewRequest(http.MethodGet,"http://localhost:8080/seller/products/24",nil)
+		request := httptest.NewRequest(http.MethodGet,"http://localhost:8080/seller/products/46",nil)
 		request.Header.Add("Authorization", "Bearer " + string(token))
 		recorder := httptest.NewRecorder()
 		authenticatedSeller := setup.AuthenticatedSeller()
@@ -165,7 +165,7 @@ func TestSellerProductUpdate(t *testing.T) {
 		token,_ := ioutil.ReadFile("token.txt")
 		jsonUpdate,_ := json.Marshal(updatedData)
 		reader := strings.NewReader(string(jsonUpdate))
-		request := httptest.NewRequest(http.MethodPut, "http://localhost:8080/seller/products/23",reader)
+		request := httptest.NewRequest(http.MethodPut, "http://localhost:8080/seller/products/46",reader)
 		request.Header.Add("Authorization", "Bearer " + string(token))
 		recorder := httptest.NewRecorder()
 		authSeller := setup.AuthenticatedSeller()
@@ -182,7 +182,7 @@ func TestSellerProductUpdate(t *testing.T) {
 		token,_ := ioutil.ReadFile("token.txt")
 		jsonUpdate,_ := json.Marshal(updatedData)
 		reader := strings.NewReader(string(jsonUpdate))
-		request := httptest.NewRequest(http.MethodPut, "http://localhost:8080/seller/products/23",reader)
+		request := httptest.NewRequest(http.MethodPut, "http://localhost:8080/seller/products/24",reader)
 		request.Header.Add("Authorization", "Bearer " + string(token))
 		recorder := httptest.NewRecorder()
 		authSeller := setup.AuthenticatedSeller()
@@ -243,7 +243,7 @@ func TestSellerProductUpdate(t *testing.T) {
 func TestSellerProductDelete(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		token,_ := ioutil.ReadFile("token.txt")
-		request := httptest.NewRequest(http.MethodDelete,"http://localhost:8080/seller/products/23",nil)
+		request := httptest.NewRequest(http.MethodDelete,"http://localhost:8080/seller/products/46",nil)
 		request.Header.Add("Authorization", "Bearer " + string(token))
 		recorder := httptest.NewRecorder()
 		authSeller := setup.AuthenticatedSeller()

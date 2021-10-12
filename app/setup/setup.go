@@ -20,6 +20,15 @@ func Seller() controller.SellerController {
 	return sellerController
 }
 
+func GeneralCustomer() controller.CustomerProductController{
+	db := app.Connection()
+	customerProductRepo := repository.NewCustomerProductRepoImpl()
+	productImages := repository.NewProductImagesRepoImpl()
+	customerProductService := service.NewCustomerProductServiceImpl(db,productImages,customerProductRepo)
+	customerProductController := controller.NewCustomerProductControllerImpl(customerProductService)
+	return customerProductController
+}
+
 func SellerAuth() *mux.Router {
 	SellerAuth := app.Mux.NewRoute().Subrouter()
 	SellerAuth.Use(middleware.PanicHandler)
@@ -43,4 +52,14 @@ func AuthenticatedSeller() *mux.Router {
 	AuthenticatedSeller.HandleFunc(app.SELLER_PROUDUCT_MANIPULATION,sellerController.UpdateProduct).Methods(http.MethodPut)
 	AuthenticatedSeller.HandleFunc(app.SELLER_PROUDUCT_MANIPULATION,sellerController.GetDetailProduct).Methods(http.MethodGet)
 	return AuthenticatedSeller
+}
+
+func CustomerProduct() *mux.Router {
+	generalCustomerRouter := app.Mux.NewRoute().Subrouter()
+	generalCustomerRouter.Use(middleware.PanicHandler)
+
+	generalCustomerController := GeneralCustomer()
+	generalCustomerRouter.HandleFunc(app.PRODUCTS, generalCustomerController.Get).Methods(http.MethodGet)
+	generalCustomerRouter.HandleFunc(app.PRODUCT_DETAIL, generalCustomerController.GetDetail).Methods(http.MethodGet)
+	return generalCustomerRouter
 }
