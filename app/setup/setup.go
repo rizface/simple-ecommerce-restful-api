@@ -29,6 +29,14 @@ func GeneralCustomer() controller.CustomerProductController{
 	return customerProductController
 }
 
+func CustomerAuth() controller.CustomerAuthController {
+	db := app.Connection()
+	repo := repository.NewCustomerRepositoryImpl()
+	service := service.NewCustomerServiceImpl(db,app.Validator,repo)
+	controller := controller.NewCustomerAuthController(service)
+	return controller
+}
+
 func SellerAuth() *mux.Router {
 	SellerAuth := app.Mux.NewRoute().Subrouter()
 	SellerAuth.Use(middleware.PanicHandler)
@@ -62,4 +70,14 @@ func CustomerProduct() *mux.Router {
 	generalCustomerRouter.HandleFunc(app.PRODUCTS, generalCustomerController.Get).Methods(http.MethodGet)
 	generalCustomerRouter.HandleFunc(app.PRODUCT_DETAIL, generalCustomerController.GetDetail).Methods(http.MethodGet)
 	return generalCustomerRouter
+}
+
+func CustomerAuthRouter() *mux.Router {
+	controller := CustomerAuth()
+	router := app.Mux.NewRoute().Subrouter()
+	router.Use(middleware.PanicHandler)
+
+	router.HandleFunc(app.CUSTOMER_REGISTER,controller.Register).Methods(http.MethodPost)
+	router.HandleFunc(app.CUSTOMER_LOGIN,controller.Login).Methods(http.MethodPost)
+	return router
 }

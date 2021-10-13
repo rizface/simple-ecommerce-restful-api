@@ -11,6 +11,7 @@ func main() {
 	setup.SellerAuth()
 	setup.AuthenticatedSeller()
 	setup.CustomerProduct()
+	setup.CustomerAuthRouter()
 	server := http.Server{
 		Addr: ":8080",
 		Handler: app.Mux,
