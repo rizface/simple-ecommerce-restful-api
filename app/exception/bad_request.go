@@ -11,11 +11,11 @@ type BadRequest struct {
 
 func PanicBadRequest(err interface{}) {
 	if err != nil {
-		if validatorErr,validatorErrOK := err.(validator.ValidationErrors); validatorErrOK {
+		if validatorErr, validatorErrOK := err.(validator.ValidationErrors); validatorErrOK {
 			panic(BadRequest{
 				Error: validatorErr[0].Error(),
 			})
-		} else if jwtErr,jwtErrOK := err.(*jwt.ValidationError); jwtErrOK{
+		} else if jwtErr, jwtErrOK := err.(*jwt.ValidationError); jwtErrOK {
 			panic(BadRequest{
 				Error: jwtErr.Error(),
 			})

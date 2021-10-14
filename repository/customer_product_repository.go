@@ -6,7 +6,7 @@ import (
 	"simple-ecommerce-rest-api/model/domain"
 )
 
-type CustomerProduct interface{
+type CustomerProduct interface {
 	Get(ctx context.Context, tx *sql.Tx) []domain.Products
 	GetDetail(ctx context.Context, tx *sql.Tx, idProduct int) domain.Products
 }

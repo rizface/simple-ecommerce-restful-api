@@ -17,16 +17,16 @@ func UploadProductImages(images []string) []string {
 	}
 
 	client := &http.Client{}
-	jsonPayload,err := json.Marshal(outbond.FileUpload{
+	jsonPayload, err := json.Marshal(outbond.FileUpload{
 		Files: images,
 	})
 	exception.PanicIfInternalServerError(err)
 
 	reader := strings.NewReader(string(jsonPayload))
-	request,err := http.NewRequest(http.MethodPost, app.UPLOAD_IMAGES,reader)
+	request, err := http.NewRequest(http.MethodPost, app.UPLOAD_IMAGES, reader)
 	exception.PanicIfInternalServerError(err)
 
-	response,err := client.Do(request)
+	response, err := client.Do(request)
 	exception.PanicIfInternalServerError(err)
 
 	uploadResponse := outbond.FileUploadResponse{}
@@ -35,5 +35,3 @@ func UploadProductImages(images []string) []string {
 
 	return uploadResponse.Data
 }
-
-

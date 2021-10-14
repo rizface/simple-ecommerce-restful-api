@@ -13,12 +13,12 @@ import (
 )
 
 type sellerProductServiceImpl struct {
-	db *sql.DB
-	validate *validator.Validate
+	db            *sql.DB
+	validate      *validator.Validate
 	sellerProduct repository.SellerProductRepository
 }
 
-func NewSellerProductServiceImpl(db *sql.DB, validate *validator.Validate, sellerProduct repository.SellerProductRepository) SellerProductService{
+func NewSellerProductServiceImpl(db *sql.DB, validate *validator.Validate, sellerProduct repository.SellerProductRepository) SellerProductService {
 	return &sellerProductServiceImpl{
 		db:            db,
 		validate:      validate,
@@ -26,20 +26,20 @@ func NewSellerProductServiceImpl(db *sql.DB, validate *validator.Validate, selle
 	}
 }
 
-func (s *sellerProductServiceImpl) GetProducts(ctx context.Context, idSeller int)[]domain.Products {
-	tx,err := s.db.Begin()
+func (s *sellerProductServiceImpl) GetProducts(ctx context.Context, idSeller int) []domain.Products {
+	tx, err := s.db.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	products := s.sellerProduct.GetProducts(ctx,tx,idSeller)
+	products := s.sellerProduct.GetProducts(ctx, tx, idSeller)
 	return products
 }
 
 func (s *sellerProductServiceImpl) GetDetailProduct(ctx context.Context, idProduct int) domain.Products {
-	tx,err := s.db.Begin()
+	tx, err := s.db.Begin()
 	exception.PanicIfInternalServerError(err)
 	defer helper.CommitOrRollback(tx)
-	product := s.sellerProduct.FindById(ctx,tx,idProduct)
+	product := s.sellerProduct.FindById(ctx, tx, idProduct)
 	exception.PanicNotFound(product.Id)
 	return product
 }
@@ -51,15 +51,15 @@ func (s *sellerProductServiceImpl) PostProduct(ctx context.Context, idSeller int
 	images := helper.UploadProductImages(request.Gambar)
 	request.Gambar = images
 
-	tx,err := s.db.Begin()
+	tx, err := s.db.Begin()
 	wg := sync.WaitGroup{}
 	exception.PanicBadRequest(err)
 	defer helper.CommitOrRollback(tx)
-	product := s.sellerProduct.PostProduct(ctx,tx,idSeller,request)
+	product := s.sellerProduct.PostProduct(ctx, tx, idSeller, request)
 
 	wg.Add(len(images))
 	for _, v := range images {
-		go s.sellerProduct.PostProductImages(ctx,tx,product.Id,v,&wg)
+		go s.sellerProduct.PostProductImages(ctx, tx, product.Id, v, &wg)
 	}
 	wg.Wait()
 
@@ -67,14 +67,14 @@ func (s *sellerProductServiceImpl) PostProduct(ctx context.Context, idSeller int
 }
 
 func (s *sellerProductServiceImpl) DeleteProduct(ctx context.Context, idProduct int) bool {
-	tx,err := s.db.Begin()
+	tx, err := s.db.Begin()
 	exception.PanicIfInternalServerError(err)
 
 	defer helper.CommitOrRollback(tx)
-	exist := s.sellerProduct.FindById(ctx,tx,idProduct)
+	exist := s.sellerProduct.FindById(ctx, tx, idProduct)
 	exception.PanicNotFound(exist.Id)
 
-	result := s.sellerProduct.DeleteProduct(ctx,tx,exist.Id)
+	result := s.sellerProduct.DeleteProduct(ctx, tx, exist.Id)
 	return result
 }
 
@@ -82,14 +82,14 @@ func (s *sellerProductServiceImpl) UpdateProduct(ctx context.Context, idProduct 
 	err := s.validate.Struct(request)
 	exception.PanicBadRequest(err)
 
-	tx,err := s.db.Begin()
+	tx, err := s.db.Begin()
 	exception.PanicIfInternalServerError(err)
 	defer helper.CommitOrRollback(tx)
 
-	exist := s.sellerProduct.FindById(ctx,tx,idProduct)
+	exist := s.sellerProduct.FindById(ctx, tx, idProduct)
 	exception.PanicNotFound(exist.Id)
 
-	success := s.sellerProduct.UpdateProduct(ctx,tx,idProduct,idSeller,request)
+	success := s.sellerProduct.UpdateProduct(ctx, tx, idProduct, idSeller, request)
 	if success {
 		return "Product Update Success"
 	}

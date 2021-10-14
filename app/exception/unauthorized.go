@@ -7,7 +7,7 @@ type Unauthorized struct {
 func PanicUnauthorized(err interface{}) {
 	if err != nil {
 		panic(Unauthorized{
-			Error:err.(error).Error(),
+			Error: err.(error).Error(),
 		})
 	}
 }

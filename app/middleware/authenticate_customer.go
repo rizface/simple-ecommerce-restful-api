@@ -15,10 +15,10 @@ func AuthenticatedCustomer(next http.Handler) http.Handler {
 		if len(items) != 2 || items[0] != "Bearer" {
 			exception.PanicBadRequest(errors.New("token invalid"))
 		} else {
-			claims,err := helper.VerifyTokenCustomer(items[1])
+			claims, err := helper.VerifyTokenCustomer(items[1])
 			exception.PanicBadRequest(err)
-			request = request.WithContext(context.WithValue(request.Context(), "customer-data",claims))
-			next.ServeHTTP(writer,request)
+			request = request.WithContext(context.WithValue(request.Context(), "customer-data", claims))
+			next.ServeHTTP(writer, request)
 		}
 	})
 }

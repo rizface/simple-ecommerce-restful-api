@@ -1,6 +1,5 @@
 package exception
 
-
 type InternalServerError struct {
 	Error interface{}
 }

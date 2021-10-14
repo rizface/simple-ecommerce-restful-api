@@ -9,7 +9,7 @@ import (
 	"simple-ecommerce-rest-api/service"
 )
 
-type customerAuthControllerImpl struct{
+type customerAuthControllerImpl struct {
 	service service.CustomerAuthService
 }
 
@@ -23,11 +23,11 @@ func (c customerAuthControllerImpl) Register(w http.ResponseWriter, r *http.Requ
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&request)
 	exception.PanicIfInternalServerError(err)
-	result := c.service.RegisterCustomer(r.Context(),request)
+	result := c.service.RegisterCustomer(r.Context(), request)
 	if result == true {
-		helper.JsonWriter(w,http.StatusOK,"registrasi customer success", nil)
+		helper.JsonWriter(w, http.StatusOK, "registrasi customer success", nil)
 	} else {
-		helper.JsonWriter(w,http.StatusOK,"registrasi customer failed", nil)
+		helper.JsonWriter(w, http.StatusOK, "registrasi customer failed", nil)
 	}
 }
 
@@ -36,8 +36,8 @@ func (c customerAuthControllerImpl) Login(w http.ResponseWriter, r *http.Request
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&request)
 	exception.PanicIfInternalServerError(err)
-	result := c.service.LoginCustomer(r.Context(),request)
-	helper.JsonWriter(w,http.StatusOK,"login success", map[string]interface{} {
-		"token":result,
+	result := c.service.LoginCustomer(r.Context(), request)
+	helper.JsonWriter(w, http.StatusOK, "login success", map[string]interface{}{
+		"token": result,
 	})
 }

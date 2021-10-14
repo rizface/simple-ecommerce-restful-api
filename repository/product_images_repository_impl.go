@@ -15,7 +15,7 @@ func NewProductImagesRepoImpl() ProductImagesRepository {
 
 func (p productImagesRepositoryImpl) GetByProductId(ctx context.Context, tx *sql.Tx, idProduct int) []domain.ProductImages {
 	sql := "SELECT url FROM product_images WHERE id_product = ?"
-	rows,err := tx.QueryContext(ctx,sql,idProduct)
+	rows, err := tx.QueryContext(ctx, sql, idProduct)
 	exception.PanicIfInternalServerError(err)
 	images := []domain.ProductImages{}
 	defer rows.Close()
@@ -23,8 +23,7 @@ func (p productImagesRepositoryImpl) GetByProductId(ctx context.Context, tx *sql
 		image := domain.ProductImages{}
 		err := rows.Scan(&image.ImageUrl)
 		exception.PanicIfInternalServerError(err)
-		images = append(images,image)
+		images = append(images, image)
 	}
 	return images
 }
-

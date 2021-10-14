@@ -1,6 +1,6 @@
 package exception
 
-type NotFound struct{
+type NotFound struct {
 	Error interface{}
 }
 

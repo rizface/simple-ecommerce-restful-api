@@ -18,12 +18,12 @@ func NewCustomerProductControllerImpl(service service.CustomerProductService) Cu
 
 func (c costomerProductControllerImpl) Get(w http.ResponseWriter, r *http.Request) {
 	products := c.service.Get(r.Context())
-	helper.JsonWriter(w,http.StatusOK,"success", products)
+	helper.JsonWriter(w, http.StatusOK, "success", products)
 }
 
 func (c costomerProductControllerImpl) GetDetail(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	idProduct,_ := strconv.Atoi(params["idProduct"])
-	product := c.service.GetDetail(r.Context(),idProduct)
+	idProduct, _ := strconv.Atoi(params["idProduct"])
+	product := c.service.GetDetail(r.Context(), idProduct)
 	helper.JsonWriter(w, http.StatusOK, "success", product)
 }

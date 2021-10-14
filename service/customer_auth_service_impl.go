@@ -11,8 +11,8 @@ import (
 )
 
 type customerServiceImpl struct {
-	db *sql.DB
-	validate *validator.Validate
+	db         *sql.DB
+	validate   *validator.Validate
 	repository repository.CustomerRepository
 }
 
@@ -27,27 +27,24 @@ func NewCustomerServiceImpl(db *sql.DB, validate *validator.Validate, repository
 func (c customerServiceImpl) RegisterCustomer(ctx context.Context, request web.RequestCustomer) bool {
 	err := c.validate.Struct(request)
 	exception.PanicBadRequest(err)
-	tx,err := c.db.Begin()
+	tx, err := c.db.Begin()
 	exception.PanicIfInternalServerError(err)
 	defer helper.CommitOrRollback(tx)
-	exist := c.repository.FindByEmail(ctx,tx,request.Email)
-	exception.PanicDuplicate(exist.Id,"email sudah digunakan")
+	exist := c.repository.FindByEmail(ctx, tx, request.Email)
+	exception.PanicDuplicate(exist.Id, "email sudah digunakan")
 	request.Password = helper.Hash(request.Password)
-	result := c.repository.RegisterCustomer(ctx,tx,request)
+	result := c.repository.RegisterCustomer(ctx, tx, request)
 	return result
 }
 
 func (c customerServiceImpl) LoginCustomer(ctx context.Context, request web.RequestCustomer) string {
-	tx,err := c.db.Begin()
+	tx, err := c.db.Begin()
 	exception.PanicIfInternalServerError(err)
 	defer helper.CommitOrRollback(tx)
-	exist := c.repository.FindByEmail(ctx,tx,request.Email)
+	exist := c.repository.FindByEmail(ctx, tx, request.Email)
 	exception.PanicNotFound(exist.Id)
-	err = helper.Compare(request.Password,exist.Password)
+	err = helper.Compare(request.Password, exist.Password)
 	exception.PanicUnauthorized(err)
 	token := helper.GenerateTokenCustomer(exist)
 	return token
 }
-
-
-

@@ -12,30 +12,30 @@ import (
 )
 
 type sellerServiceImpl struct {
-	db *sql.DB
-	validate *validator.Validate
+	db         *sql.DB
+	validate   *validator.Validate
 	sellerRepo repository.SellerRepository
 }
 
 func NewSellerServiceImpl(validate *validator.Validate, db *sql.DB, sellerRepo repository.SellerRepository) SellerService {
-	return &sellerServiceImpl{validate: validate, db:db,sellerRepo: sellerRepo}
+	return &sellerServiceImpl{validate: validate, db: db, sellerRepo: sellerRepo}
 }
 
 func (s *sellerServiceImpl) Register(ctx context.Context, request web.RequestSeller) domain.Seller {
 	err := s.validate.Struct(request)
 	exception.PanicBadRequest(err)
 
-	tx,err := s.db.Begin()
+	tx, err := s.db.Begin()
 	helper.PanicIfError(err)
 
-	existEmail := s.sellerRepo.FindByEmail(ctx,tx,request.Email)
-	exception.PanicDuplicate(existEmail.Id, existEmail.Email + " Sudah Digunakan")
+	existEmail := s.sellerRepo.FindByEmail(ctx, tx, request.Email)
+	exception.PanicDuplicate(existEmail.Id, existEmail.Email+" Sudah Digunakan")
 
-	existStore := s.sellerRepo.FindByName(ctx,tx,request.NamaToko)
-	exception.PanicDuplicate(existStore.Id, existStore.NamaToko + " Suda Terdaftar")
+	existStore := s.sellerRepo.FindByName(ctx, tx, request.NamaToko)
+	exception.PanicDuplicate(existStore.Id, existStore.NamaToko+" Suda Terdaftar")
 
 	defer helper.CommitOrRollback(tx)
-	sellerId := s.sellerRepo.Register(ctx,tx,request)
+	sellerId := s.sellerRepo.Register(ctx, tx, request)
 	seller := domain.Seller{
 		Id:         int(sellerId),
 		NamaToko:   request.NamaToko,
@@ -47,18 +47,15 @@ func (s *sellerServiceImpl) Register(ctx context.Context, request web.RequestSel
 }
 
 func (s *sellerServiceImpl) Login(ctx context.Context, request web.RequestSeller) string {
-	tx,err := s.db.Begin()
+	tx, err := s.db.Begin()
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
-	existEmail := s.sellerRepo.FindByEmail(ctx,tx,request.Email)
+	existEmail := s.sellerRepo.FindByEmail(ctx, tx, request.Email)
 	exception.PanicNotFound(existEmail.Id)
 
-	err = helper.Compare(request.Password,existEmail.Password)
+	err = helper.Compare(request.Password, existEmail.Password)
 	exception.PanicUnauthorized(err)
 	token := helper.GenerateTokenSeller(existEmail)
 	return token
 }
-
-
-
