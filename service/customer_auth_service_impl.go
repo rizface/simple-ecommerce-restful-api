@@ -3,9 +3,11 @@ package service
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"github.com/go-playground/validator/v10"
 	"simple-ecommerce-rest-api/app/exception"
 	"simple-ecommerce-rest-api/helper"
+	"simple-ecommerce-rest-api/model/domain"
 	"simple-ecommerce-rest-api/model/web"
 	"simple-ecommerce-rest-api/repository"
 )
@@ -34,7 +36,19 @@ func (c customerServiceImpl) RegisterCustomer(ctx context.Context, request web.R
 	exception.PanicDuplicate(exist.Id, "email sudah digunakan")
 	request.Password = helper.Hash(request.Password)
 	result := c.repository.RegisterCustomer(ctx, tx, request)
-	return result
+
+	// send email verification
+	token := helper.GenerateTokenCustomer(domain.Customers{
+		Id:           int(result),
+		NamaCustomer: request.NamaCustomer,
+		Email:        request.Email,
+		NoHp:         request.NoHp,
+		Confirmed:    0,
+	})
+	helper.SendEmail(":8080/customer/"+token, request.Email)
+	// send email verification
+
+	return result > 0
 }
 
 func (c customerServiceImpl) LoginCustomer(ctx context.Context, request web.RequestCustomer) string {
@@ -47,4 +61,24 @@ func (c customerServiceImpl) LoginCustomer(ctx context.Context, request web.Requ
 	exception.PanicUnauthorized(err)
 	token := helper.GenerateTokenCustomer(exist)
 	return token
+}
+
+func (c customerServiceImpl) Confirm(ctx context.Context, token string) string {
+	claims,err := helper.VerifyTokenCustomer(token)
+	customer,customerOK := claims.(*helper.CustomerCustom)
+
+	if err != nil || !customerOK {
+		exception.PanicBadRequest(errors.New("token invalid"))
+	}
+
+	tx,err := c.db.Begin()
+	exception.PanicIfInternalServerError(err)
+	defer helper.CommitOrRollback(tx)
+	existCustomer := c.repository.FindByEmail(ctx,tx,customer.Email)
+	exception.PanicNotFound(existCustomer.Id)
+	success := c.repository.UpdateConfirmed(ctx,tx,existCustomer.Id)
+	if success {
+		return "account confirmation success"
+	}
+	return "account confirmation failed"
 }

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"simple-ecommerce-rest-api/app/exception"
 	"simple-ecommerce-rest-api/helper"
 	"simple-ecommerce-rest-api/model/domain"
 	"simple-ecommerce-rest-api/model/web"
@@ -24,27 +25,37 @@ func (s sellerRepositoryImpl) Register(ctx context.Context, tx *sql.Tx, request 
 }
 
 func (s sellerRepositoryImpl) FindByEmail(ctx context.Context, tx *sql.Tx, email string) domain.Seller {
-	sql := "SELECT id,nama_toko,email,password,alamat_toko,deskripsi, DATE_FORMAT(created_at, '%w %M %Y') FROM sellers WHERE email = ?"
+	sql := "SELECT id,nama_toko,email,password,alamat_toko,deskripsi,confirmed, DATE_FORMAT(created_at, '%w %M %Y') FROM sellers WHERE email = ?"
 	rows, err := tx.QueryContext(ctx, sql, email)
 	helper.PanicIfError(err)
 	defer rows.Close()
 	seller := domain.Seller{}
 	if rows.Next() {
-		err := rows.Scan(&seller.Id, &seller.NamaToko, &seller.Email, &seller.Password, &seller.AlamatToko, &seller.Deskripsi, &seller.CreatedAt)
+		err := rows.Scan(&seller.Id, &seller.NamaToko, &seller.Email, &seller.Password, &seller.AlamatToko, &seller.Deskripsi,&seller.Confirmed, &seller.CreatedAt)
 		helper.PanicIfError(err)
 	}
 	return seller
 }
 
 func (s sellerRepositoryImpl) FindByName(ctx context.Context, tx *sql.Tx, name string) domain.Seller {
-	sql := "SELECT id,nama_toko,email,password,alamat_toko,deskripsi, DATE_FORMAT(created_at, '%w %M %Y') FROM sellers WHERE nama_toko = ?"
+	sql := "SELECT id,nama_toko,email,password,alamat_toko,deskripsi,confirmed, DATE_FORMAT(created_at, '%w %M %Y') FROM sellers WHERE nama_toko = ?"
 	rows, err := tx.QueryContext(ctx, sql, name)
 	helper.PanicIfError(err)
 	defer rows.Close()
 	seller := domain.Seller{}
 	if rows.Next() {
-		err := rows.Scan(&seller.Id, &seller.NamaToko, &seller.Email, &seller.Password, &seller.AlamatToko, &seller.Deskripsi, &seller.CreatedAt)
+		err := rows.Scan(&seller.Id, &seller.NamaToko, &seller.Email, &seller.Password, &seller.AlamatToko, &seller.Deskripsi,&seller.Confirmed, &seller.CreatedAt)
 		helper.PanicIfError(err)
 	}
 	return seller
 }
+
+func (s sellerRepositoryImpl) Confirm(ctx context.Context, tx *sql.Tx, idSeller int) bool {
+	sql := "UPDATE sellers SET confirmed = ? WHERE id = ?"
+	result,err := tx.ExecContext(ctx,sql,1,idSeller)
+	exception.PanicIfInternalServerError(err)
+	affected,err := result.RowsAffected()
+	exception.PanicIfInternalServerError(err)
+	return affected > 0
+}
+

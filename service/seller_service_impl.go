@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"github.com/go-playground/validator/v10"
 	"simple-ecommerce-rest-api/app/exception"
 	"simple-ecommerce-rest-api/helper"
@@ -32,7 +33,7 @@ func (s *sellerServiceImpl) Register(ctx context.Context, request web.RequestSel
 	exception.PanicDuplicate(existEmail.Id, existEmail.Email+" Sudah Digunakan")
 
 	existStore := s.sellerRepo.FindByName(ctx, tx, request.NamaToko)
-	exception.PanicDuplicate(existStore.Id, existStore.NamaToko+" Suda Terdaftar")
+	exception.PanicDuplicate(existStore.Id, existStore.NamaToko+" Sudah Terdaftar")
 
 	defer helper.CommitOrRollback(tx)
 	sellerId := s.sellerRepo.Register(ctx, tx, request)
@@ -43,6 +44,11 @@ func (s *sellerServiceImpl) Register(ctx context.Context, request web.RequestSel
 		AlamatToko: request.AlamatToko,
 		Deskripsi:  request.Deskripsi,
 	}
+
+	// send verification email
+	token := helper.GenerateTokenSeller(seller)
+	helper.SendEmail(":8080/seller/"+token, seller.Email)
+	// send verification email
 	return seller
 }
 
@@ -58,4 +64,22 @@ func (s *sellerServiceImpl) Login(ctx context.Context, request web.RequestSeller
 	exception.PanicUnauthorized(err)
 	token := helper.GenerateTokenSeller(existEmail)
 	return token
+}
+
+func (s *sellerServiceImpl) Confirm(ctx context.Context, token string) string {
+	claims, err := helper.VerifyToken(token)
+	seller, sellerOK := claims.(*helper.SellerCustom)
+	if err != nil || !sellerOK {
+		exception.PanicBadRequest(errors.New("token is invalid"))
+	}
+	tx, err := s.db.Begin()
+	exception.PanicIfInternalServerError(err)
+	defer helper.CommitOrRollback(tx)
+	existSeller := s.sellerRepo.FindByEmail(ctx, tx, seller.Email)
+	exception.PanicNotFound(existSeller.Id)
+	success := s.sellerRepo.Confirm(ctx, tx, existSeller.Id)
+	if success {
+		return "seller account confirmation is success"
+	}
+	return "seller account confirmation is failed"
 }

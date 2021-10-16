@@ -17,6 +17,7 @@ func AuthenticatedCustomer(next http.Handler) http.Handler {
 		} else {
 			claims, err := helper.VerifyTokenCustomer(items[1])
 			exception.PanicBadRequest(err)
+			helper.Confirmed(claims.(*helper.CustomerCustom).Confirmed)
 			request = request.WithContext(context.WithValue(request.Context(), "customer-data", claims))
 			next.ServeHTTP(writer, request)
 		}

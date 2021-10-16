@@ -28,7 +28,7 @@ func (s sellerControllerImpl) Register(w http.ResponseWriter, r *http.Request) {
 	seller := s.service.Register(r.Context(), request)
 	json.NewEncoder(w).Encode(model.StandardResponse{
 		Code:   http.StatusOK,
-		Status: "Registrasi Seller Berhasil",
+		Status: "seller registration success, open your email to verification email",
 		Data:   seller,
 	})
 }
@@ -41,6 +41,13 @@ func (s sellerControllerImpl) Login(w http.ResponseWriter, r *http.Request) {
 	helper.JsonWriter(w, http.StatusOK, "Login Success", map[string]string{
 		"token": token,
 	})
+}
+
+func (s sellerControllerImpl) Confirm(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	token := params["token"]
+	result := s.service.Confirm(r.Context(),token)
+	helper.JsonWriter(w,http.StatusOK,result,nil)
 }
 
 func (s sellerControllerImpl) GetProducts(w http.ResponseWriter, r *http.Request) {

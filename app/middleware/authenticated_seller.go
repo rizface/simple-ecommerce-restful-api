@@ -17,6 +17,7 @@ func AuthenticatedSeller(next http.Handler) http.Handler {
 		} else {
 			claims, err := helper.VerifyToken(token[1])
 			exception.PanicBadRequest(err)
+			helper.Confirmed(claims.(*helper.SellerCustom).Confirmed)
 			sellerData := context.WithValue(request.Context(), "seller-data", claims)
 			request = request.WithContext(sellerData)
 			next.ServeHTTP(writer, request)

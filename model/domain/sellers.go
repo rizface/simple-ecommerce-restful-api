@@ -2,10 +2,11 @@ package domain
 
 type Seller struct {
 	Id         int    `json:"id"`
-	NamaToko   string `json:"omitempty, nama_toko"`
-	Email      string `json:"omitempty, email"`
-	Password   string `json:"omitempty, password"`
-	AlamatToko string `json:"omitempty, alamat_toko"`
-	Deskripsi  string `json:"omitempty, deskripsi"`
+	NamaToko   string `json:"nama_toko,omitempty"`
+	Email      string `json:"email,omitempty"`
+	Password   string `json:"password,omitempty"`
+	AlamatToko string `json:"alamat_toko,omitempty"`
+	Deskripsi  string `json:"deskripsi,omitempty"`
 	CreatedAt  string `json:"omitempty,created_at"`
+	Confirmed  int    `json:"confirmed"`
 }

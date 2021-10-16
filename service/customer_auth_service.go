@@ -8,4 +8,5 @@ import (
 type CustomerAuthService interface {
 	RegisterCustomer(ctx context.Context, request web.RequestCustomer) bool
 	LoginCustomer(ctx context.Context, request web.RequestCustomer) string
+	Confirm(ctx context.Context, token string) string
 }

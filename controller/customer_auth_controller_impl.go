@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"net/http"
 	"simple-ecommerce-rest-api/app/exception"
 	"simple-ecommerce-rest-api/helper"
@@ -25,7 +26,7 @@ func (c customerAuthControllerImpl) Register(w http.ResponseWriter, r *http.Requ
 	exception.PanicIfInternalServerError(err)
 	result := c.service.RegisterCustomer(r.Context(), request)
 	if result == true {
-		helper.JsonWriter(w, http.StatusOK, "registrasi customer success", nil)
+		helper.JsonWriter(w, http.StatusOK, "registrasi customer success, open your email for verification", nil)
 	} else {
 		helper.JsonWriter(w, http.StatusOK, "registrasi customer failed", nil)
 	}
@@ -40,4 +41,11 @@ func (c customerAuthControllerImpl) Login(w http.ResponseWriter, r *http.Request
 	helper.JsonWriter(w, http.StatusOK, "login success", map[string]interface{}{
 		"token": result,
 	})
+}
+
+func (c customerAuthControllerImpl) Confirm(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	token := params["token"]
+	result := c.service.Confirm(r.Context(),token)
+	helper.JsonWriter(w,http.StatusOK,result,nil)
 }

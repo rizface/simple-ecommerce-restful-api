@@ -16,8 +16,8 @@ import (
 func TestRegister(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		requestData := web.RequestCustomer{
-			NamaCustomer: "handoko",
-			Email:        "handoko@gmail.com",
+			NamaCustomer: "muhamamd al farizzi",
+			Email:        "malfarizzi33@gmail.com",
 			NoHp:         "081212342134",
 			Password:     "rahasia",
 		}
@@ -27,6 +27,8 @@ func TestRegister(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		router := setup.CustomerAuthRouter()
 		router.ServeHTTP(recorder, request)
+		resBody,_ := io.ReadAll(recorder.Body)
+		fmt.Print(string(resBody))
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	})
 	t.Run("bad request", func(t *testing.T) {

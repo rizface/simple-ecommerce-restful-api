@@ -142,6 +142,19 @@ func TestCustomerCartGet(t *testing.T) {
 		fmt.Println(string(resBody))
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	})
+
+	t.Run("not confirmed customer account", func(t *testing.T) {
+		token, _ := ioutil.ReadFile("token.txt")
+		request := httptest.NewRequest(http.MethodGet, app.CART, nil)
+		request.Header.Add("Authorization", "Bearer "+string(token))
+		recorder := httptest.NewRecorder()
+		router := setup.CartRouter()
+		router.ServeHTTP(recorder, request)
+		resBody, _ := io.ReadAll(recorder.Body)
+		fmt.Println(string(resBody))
+		assert.Equal(t, http.StatusUnauthorized, recorder.Code)
+	})
+
 }
 
 func TestCustomerCartDelete(t *testing.T) {

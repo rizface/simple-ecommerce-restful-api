@@ -18,6 +18,7 @@ type SellerCustom struct {
 	Deskripsi string `json:"deskripsi"`
 	Seller    bool   `json:"seller"`
 	CreatedAt string `json:"created_at"`
+	Confirmed int    `json:"confirmed"`
 	jwt.RegisteredClaims
 }
 type CustomerCustom struct {
@@ -25,7 +26,7 @@ type CustomerCustom struct {
 	NamaCustomer string `json:"nama_toko"`
 	Email        string `json:"email"`
 	NoHp         string `json:"no_hp"`
-	CreatedAt    string `json:"created_at"`
+	Confirmed    int    `json:"confirmed"`
 	jwt.RegisteredClaims
 }
 
@@ -35,7 +36,7 @@ func GenerateTokenCustomer(customer domain.Customers) string {
 		NamaCustomer: customer.NamaCustomer,
 		Email:        customer.Email,
 		NoHp:         customer.NoHp,
-		CreatedAt:    customer.CreatedAt,
+		Confirmed:    customer.Confirmed,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "Muhammad Al Farizzi",
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(1) * time.Hour)),
@@ -53,7 +54,6 @@ func GenerateTokenSeller(seller domain.Seller) string {
 		NamaToko:  seller.NamaToko,
 		Email:     seller.Email,
 		Deskripsi: seller.Deskripsi,
-		CreatedAt: seller.CreatedAt,
 		Seller:    true,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "Muhammad Al Farizzi",

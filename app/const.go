@@ -7,6 +7,11 @@ import (
 var Mux *mux.Router = mux.NewRouter()
 
 const (
+
+	// Confirm Account
+	CUSTOMER_CONFIRM = "/customer/{token}"
+	SELLER_CONFIRM = "/seller/{token}"
+
 	// Customer
 	CUSTOMER_REGISTER = "/customer/register"
 	CUSTOMER_LOGIN    = "/customer/login"

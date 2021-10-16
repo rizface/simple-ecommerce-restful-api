@@ -1412,7 +1412,7 @@
     "/cart": {
       "description": "enpoint to check and insert product in chart",
       "get": {
-        "tags": ["chart"],
+        "tags": ["cart"],
         "security": [
           {
             "customer": []
@@ -1531,7 +1531,7 @@
       },
       "post": {
         "description": "insert product to chart",
-        "tags": ["chart"],
+        "tags": ["cart"],
         "security": [
           {
             "customer": []
@@ -1670,6 +1670,247 @@
                 "examples": {
                   "internal-server-error": {
                     "$ref": "#/components/examples/internal-server-error-response"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cart/{idCart}":  {
+      "delete": {
+        "tags": ["cart"],
+        "description": "endpoint for delete item from cart",
+        "security": [
+          {
+            "customer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "idCart",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "response if delete item from cart is success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "code": 200,
+                      "status": "success",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "response if access token is invalid or other bad requesr cases",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "bad request": {
+                    "value": {
+                      "code": 404,
+                      "status": "bad request",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "response if target is not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "not found": {
+                    "value": {
+                      "code": 404,
+                      "status": "not found",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["cart"],
+        "description": "endpoint for update cart item",
+        "parameters": [
+          {
+            "name": "idCart",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "minimum": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jumlah": {
+                    "type": "integer",
+                    "required": true
+                  }
+                }
+              },
+              "examples": {
+                  "update cart": {
+                    "value": {
+                      "jumlah": 100
+                    }
+                  }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "response if update cart item is success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                    "success": {
+                      "value": {
+                        "code": 200,
+                        "status": "success",
+                        "data": null
+                      }
+                    }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "response if access token is invalid or other bad request cases",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "bad request": {
+                    "value": {
+                      "code": 400,
+                      "status": "bad request",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "response if item not found in database",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "not found": {
+                    "value": {
+                      "code": 404,
+                      "status": "not found",
+                      "data": null
+                    }
                   }
                 }
               }

@@ -20,8 +20,8 @@ var ctx = context.Background()
 var db = app.Connection()
 
 var dataValid = web.RequestSeller{
-	NamaToko:   "toko_sejahtera20",
-	Email:      "sejahtera4@gmail.com",
+	NamaToko:   "toko komputer",
+	Email:      "malfarizzi33@gmail.com",
 	Password:   helper.Hash("sejahtera123"),
 	AlamatToko: "jakarta",
 	Deskripsi:  "toko kami keren",
@@ -46,9 +46,7 @@ func TestSellerIntegrtionRegister(t *testing.T) {
 
 		sellerAuth := setup.SellerAuth()
 		sellerAuth.ServeHTTP(recorder, request)
-
-		response := recorder
-		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, 200, recorder.Code)
 	})
 
 	t.Run("bad request", func(t *testing.T) {

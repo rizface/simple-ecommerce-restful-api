@@ -55,6 +55,7 @@ func SellerAuth() *mux.Router {
 
 	SellerAuth.HandleFunc(app.SELLER_REGITER, sellerController.Register).Methods(http.MethodPost)
 	SellerAuth.HandleFunc(app.SELLER_LOGIN, sellerController.Login).Methods(http.MethodPost)
+	SellerAuth.HandleFunc(app.SELLER_CONFIRM,sellerController.Confirm).Methods(http.MethodGet)
 	return SellerAuth
 }
 
@@ -89,6 +90,7 @@ func CustomerAuthRouter() *mux.Router {
 
 	router.HandleFunc(app.CUSTOMER_REGISTER, controller.Register).Methods(http.MethodPost)
 	router.HandleFunc(app.CUSTOMER_LOGIN, controller.Login).Methods(http.MethodPost)
+	router.HandleFunc(app.CUSTOMER_CONFIRM,controller.Confirm).Methods(http.MethodGet)
 	return router
 }
 

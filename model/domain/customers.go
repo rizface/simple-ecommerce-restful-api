@@ -7,4 +7,5 @@ type Customers struct {
 	NoHp         string `validate:"required" json:"no_hp,omitempty"`
 	Password     string `validate:"required" json:"password,omitempty"`
 	CreatedAt    string `validate:"required" json:"created_at,omitempty"`
+	Confirmed    int    `json:"confirmed"`
 }

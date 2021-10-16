@@ -8,6 +8,7 @@ import (
 )
 
 type CustomerRepository interface {
-	RegisterCustomer(ctx context.Context, tx *sql.Tx, request web.RequestCustomer) bool
+	RegisterCustomer(ctx context.Context, tx *sql.Tx, request web.RequestCustomer) int64
 	FindByEmail(ctx context.Context, tx *sql.Tx, email string) domain.Customers
+	UpdateConfirmed(ctx context.Context, tx *sql.Tx, idCustomer int) bool
 }
