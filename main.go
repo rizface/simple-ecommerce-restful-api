@@ -15,6 +15,7 @@ func main() {
 	setup.CustomerProduct()
 	setup.CustomerAuthRouter()
 	setup.CartRouter()
+	setup.OrderRouter()
 
 	app.Mux.MethodNotAllowedHandler = http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		helper.JsonWriter(writer,http.StatusMethodNotAllowed,"method not allowed",nil)

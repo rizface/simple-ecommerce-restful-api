@@ -41,9 +41,18 @@ func CustomerAuth() controller.CustomerAuthController {
 func Cart() controller.CartController {
 	cartRepo := repository.NewCartRepository()
 	productRepo := repository.NewCustomerProductRepoImpl()
-	service := service.NewCartService(app.Connection(),app.Validator,cartRepo,productRepo)
+	service := service.NewCartService(app.Connection(), app.Validator, cartRepo, productRepo)
 	controller := controller.NewCartController(service)
 	return controller
+}
+
+func Order() controller.OrderController {
+	productRepo := repository.NewSellerProductRepositoryImpl()
+	orderRepo := repository.NewOrderRepository()
+	invoiceRepo := repository.NewInvoiceRepo()
+	service := service.NewOrderService(app.Connection(), app.Validator, productRepo, orderRepo, invoiceRepo)
+	c := controller.NewOrderController(service)
+	return c
 }
 
 // Router
@@ -55,7 +64,7 @@ func SellerAuth() *mux.Router {
 
 	SellerAuth.HandleFunc(app.SELLER_REGITER, sellerController.Register).Methods(http.MethodPost)
 	SellerAuth.HandleFunc(app.SELLER_LOGIN, sellerController.Login).Methods(http.MethodPost)
-	SellerAuth.HandleFunc(app.SELLER_CONFIRM,sellerController.Confirm).Methods(http.MethodGet)
+	SellerAuth.HandleFunc(app.SELLER_CONFIRM, sellerController.Confirm).Methods(http.MethodGet)
 	return SellerAuth
 }
 
@@ -90,7 +99,7 @@ func CustomerAuthRouter() *mux.Router {
 
 	router.HandleFunc(app.CUSTOMER_REGISTER, controller.Register).Methods(http.MethodPost)
 	router.HandleFunc(app.CUSTOMER_LOGIN, controller.Login).Methods(http.MethodPost)
-	router.HandleFunc(app.CUSTOMER_CONFIRM,controller.Confirm).Methods(http.MethodGet)
+	router.HandleFunc(app.CUSTOMER_CONFIRM, controller.Confirm).Methods(http.MethodGet)
 	return router
 }
 
@@ -104,5 +113,15 @@ func CartRouter() *mux.Router {
 	router.HandleFunc(app.CART, controller.PostItem).Methods(http.MethodPost)
 	router.HandleFunc(app.CART_UPDATE_DELETE, controller.UpdateItem).Methods(http.MethodPut)
 	router.HandleFunc(app.CART_UPDATE_DELETE, controller.DeleteItem).Methods(http.MethodDelete)
+	return router
+}
+
+func OrderRouter() *mux.Router {
+	c := Order()
+	router := app.Mux.NewRoute().Subrouter()
+	router.Use(middleware.PanicHandler)
+	router.Use(middleware.AuthenticatedCustomer)
+
+	router.HandleFunc(app.ORDER,c.PostOrders).Methods(http.MethodPost)
 	return router
 }

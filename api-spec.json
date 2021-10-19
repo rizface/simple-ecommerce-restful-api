@@ -1918,6 +1918,264 @@
           }
         }
       }
+    },
+    "/orders": {
+      "description": "endpoint for handler order request",
+      "get": {
+        "tags": ["order"],
+        "description": "endpoint to get all orders",
+        "responses": {
+          "200": {
+            "description": "response if get order is success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "nama_barang": {
+                            "type": "string"
+                          },
+                          "jumlah": {
+                            "type": "integer"
+                          },
+                          "harga_satuan": {
+                            "type": "integer"
+                          },
+                          "total": {
+                            "type": "integer"
+                          },
+                          "gambar": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "examples": {
+                  "orders": {
+                    "value": {
+                      "code": 200,
+                      "status": "success",
+                      "data": [
+                        {
+                          "id": 1,
+                          "nama_barang": "baju tidur",
+                          "jumlah": 1,
+                          "harga_satuan": 10000,
+                          "total": "10000",
+                          "gambar": "http://localhost:8081/gambar.png"
+                        },
+                        {
+                          "id": 2,
+                          "nama_barang": "botol minum",
+                          "jumlah": 3,
+                          "harga_satuan": 10000,
+                          "total": "30000",
+                          "gambar": "http://localhost:8081/gambar2.png"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "response if token is invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "invalid token": {
+                    "value": {
+                      "code": 400,
+                      "status": "token is invalid",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["order"],
+        "security": [
+          {
+            "customer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+               "type": "object",
+                "properties": {
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id_product": {
+                          "type": "integer"
+                        },
+                        "jumlah":{
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  },
+                  "alamat": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {
+                  "valid": {
+                    "value": {
+                      "items": [
+                        {
+                          "id_product": 1,
+                          "jumlah": 10
+                        },
+                        {
+                          "id_product": 2,
+                          "jumlah": 20
+                        }
+                      ],
+                      "alamat": "kabupaten lima puluh kota, sumatera barat"
+                    }
+                  },
+                "invalid": {
+                  "description": "if one of your request body is empty, then it is invalid"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "response if order success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "code": 200,
+                      "status": "order berhasil, silahkan kirimkan bukti pembayaran untuk masing - masing order secara terpisah, order akan dibatalkan otomatis jika dalam 2 hari tidak mengirimkan bukti pembayaran",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "response if order failed because bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "badrequest": {
+                    "value": {
+                      "code": 400,
+                      "status": "bad request",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "response if request is unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    }
+                  }
+                },
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "code": 401,
+                      "status": "request is unauthorized",
+                      "data": null
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
